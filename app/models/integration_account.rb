@@ -3,6 +3,7 @@ class IntegrationAccount < ApplicationRecord
   STATUSES = %w[connected expired revoked error].freeze
 
   belongs_to :user
+  has_many :jira_tickets, dependent: :destroy
 
   encrypts :access_token
   encrypts :refresh_token

@@ -17,6 +17,24 @@ export type ContextItem = {
   occurred_at: string;
 };
 
+export type JiraTicket = ContextItem & {
+  source: "jira";
+  metadata: {
+    priority?: string | null;
+    status?: string | null;
+    status_category?: string | null;
+    assignee?: string | null;
+    reporter?: string | null;
+    labels?: string[];
+    url?: string;
+  };
+};
+
+export type JiraTicketsResponse = {
+  tickets: JiraTicket[];
+  total: number;
+};
+
 export type CommandDetails = {
   id: number;
   status: string;
@@ -48,8 +66,8 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   });
 
   if (!response.ok) {
-    const text = await response.text();
-    throw new Error(text || `Request failed with ${response.status}`);
+    const payload = await response.json().catch(() => null);
+    throw new Error(payload?.error || `Request failed with ${response.status}`);
   }
 
   return response.json() as Promise<T>;
@@ -68,4 +86,24 @@ export function getCommand(id: number) {
 
 export function getDailyBriefing() {
   return request<DailyBriefing>("/api/v1/daily_briefing");
+}
+
+export function getJiraTickets() {
+  return request<JiraTicketsResponse>("/api/v1/jira_tickets");
+}
+
+export function checkJiraStatus() {
+  return request<{ connected: boolean; email?: string; base_url?: string }>(
+    "/api/v1/integrations/jira/status"
+  );
+}
+
+export function setupJiraIntegration(email: string, api_token: string, base_url: string) {
+  return request<{ success: boolean; metadata: Record<string, unknown> }>(
+    "/api/v1/integrations/jira/setup",
+    {
+      method: "POST",
+      body: JSON.stringify({ email, api_token, base_url })
+    }
+  );
 }
