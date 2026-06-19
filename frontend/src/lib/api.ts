@@ -21,6 +21,8 @@ export type JiraTicket = ContextItem & {
   source: "jira";
   metadata: {
     priority?: string | null;
+    project_key?: string | null;
+    project_name?: string | null;
     status?: string | null;
     status_category?: string | null;
     assignee?: string | null;

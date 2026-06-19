@@ -58,7 +58,7 @@ module Integrations
         request.body = {
           jql: scoped_jql(jql),
           maxResults: max_results,
-          fields: %w[summary description priority status assignee reporter updated created labels],
+          fields: %w[summary description priority status assignee reporter project updated created labels],
           nextPageToken: next_page_token
         }.compact
       end
@@ -73,6 +73,8 @@ module Integrations
         body: adf_text(fields["description"]),
         metadata: {
           priority: fields.dig("priority", "name"),
+          project_key: fields.dig("project", "key"),
+          project_name: fields.dig("project", "name"),
           status: fields.dig("status", "name"),
           status_category: fields.dig("status", "statusCategory", "name"),
           assignee: fields.dig("assignee", "displayName"),

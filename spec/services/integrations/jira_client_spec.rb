@@ -19,7 +19,21 @@ RSpec.describe Integrations::JiraClient do
       response = instance_double(
         Faraday::Response,
         success?: true,
-        body: { "issues" => [], "isLast" => true }
+        body: {
+          "issues" => [
+            {
+              "key" => "JAR-42",
+              "fields" => {
+                "summary" => "Filtered ticket",
+                "project" => { "key" => "JAR", "name" => "Jarvis" },
+                "priority" => { "name" => "High" },
+                "status" => { "name" => "To Do", "statusCategory" => { "name" => "To Do" } },
+                "updated" => Time.current.iso8601
+              }
+            }
+          ],
+          "isLast" => true
+        }
       )
       connection = instance_double(Faraday::Connection)
 
@@ -29,10 +43,15 @@ RSpec.describe Integrations::JiraClient do
         expect(request.body[:jql]).to eq(
           'project in ("JAR") AND (updated IS NOT EMPTY) ORDER BY updated DESC'
         )
+        expect(request.body[:fields]).to include("project", "priority")
         response
       end
 
-      described_class.new(user: user, connection: connection).all_issues
+      ticket = described_class.new(user: user, connection: connection).all_issues.first
+
+      expect(ticket.dig(:metadata, :project_key)).to eq("JAR")
+      expect(ticket.dig(:metadata, :project_name)).to eq("Jarvis")
+      expect(ticket.dig(:metadata, :priority)).to eq("High")
     end
   end
 end

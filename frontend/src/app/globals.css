@@ -268,6 +268,65 @@ h1 {
   font-size: 21px;
 }
 
+.filterBar {
+  display: flex;
+  align-items: end;
+  gap: 14px;
+  padding: 16px 22px;
+  border-bottom: 1px solid var(--line);
+  background: var(--surface-soft);
+}
+
+.filterTitle {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 38px;
+  color: #344054;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.filterField {
+  display: grid;
+  gap: 5px;
+}
+
+.filterField span {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.filterField select {
+  min-width: 170px;
+  min-height: 38px;
+  padding: 0 34px 0 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: white;
+  color: var(--ink);
+  font: inherit;
+}
+
+.clearFiltersButton {
+  min-height: 38px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--jira-dark);
+  font-weight: 800;
+}
+
+.filterCount {
+  margin-left: auto;
+  padding-bottom: 10px;
+  color: var(--muted);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
 .secondaryButton {
   gap: 7px;
   min-height: 38px;
@@ -307,6 +366,7 @@ h1 {
 }
 
 .statusPill,
+.projectPill,
 .priorityPill {
   padding: 4px 7px;
   border-radius: 5px;
@@ -314,6 +374,11 @@ h1 {
   color: #44546f;
   font-size: 11px;
   font-weight: 800;
+}
+
+.projectPill {
+  background: #e9f2ff;
+  color: var(--jira-dark);
 }
 
 .priorityPill {
@@ -398,6 +463,20 @@ h1 {
   .ticketRow {
     grid-template-columns: 1fr;
     gap: 18px;
+  }
+
+  .filterBar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .filterField select {
+    width: 100%;
+  }
+
+  .filterCount {
+    margin-left: 0;
+    padding-bottom: 0;
   }
 }
 

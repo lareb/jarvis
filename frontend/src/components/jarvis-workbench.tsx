@@ -6,6 +6,7 @@ import {
   CheckCircle2,
   CircleDot,
   CloudDownload,
+  Filter,
   Loader2,
   RefreshCw,
   TicketCheck
@@ -23,11 +24,43 @@ export function JarvisWorkbench() {
   const [jiraConnected, setJiraConnected] = useState(false);
   const [showSetupModal, setShowSetupModal] = useState(false);
   const [checkingStatus, setCheckingStatus] = useState(true);
+  const [projectFilter, setProjectFilter] = useState("all");
+  const [priorityFilter, setPriorityFilter] = useState("all");
 
-  const openTickets = useMemo(
-    () => tickets.filter((ticket) => ticket.metadata.status_category?.toLowerCase() !== "done").length,
+  const projects = useMemo(
+    () =>
+      Array.from(new Set(tickets.map(ticketProjectKey).filter(Boolean))).sort((a, b) =>
+        a.localeCompare(b)
+      ),
     [tickets]
   );
+
+  const priorities = useMemo(
+    () =>
+      Array.from(
+        new Set(tickets.map((ticket) => ticket.metadata.priority).filter((value): value is string => Boolean(value)))
+      ).sort((a, b) => a.localeCompare(b)),
+    [tickets]
+  );
+
+  const filteredTickets = useMemo(
+    () =>
+      tickets.filter((ticket) => {
+        const matchesProject = projectFilter === "all" || ticketProjectKey(ticket) === projectFilter;
+        const matchesPriority = priorityFilter === "all" || ticket.metadata.priority === priorityFilter;
+        return matchesProject && matchesPriority;
+      }),
+    [tickets, projectFilter, priorityFilter]
+  );
+
+  const openTickets = useMemo(
+    () =>
+      filteredTickets.filter((ticket) => ticket.metadata.status_category?.toLowerCase() !== "done")
+        .length,
+    [filteredTickets]
+  );
+
+  const filtersActive = projectFilter !== "all" || priorityFilter !== "all";
 
   useEffect(() => {
     checkConnection();
@@ -176,12 +209,16 @@ export function JarvisWorkbench() {
       {loadState === "success" ? (
         <>
           <section className="summaryGrid" aria-label="Jira ticket summary">
-            <SummaryCard icon={<TicketCheck size={20} />} label="Total tickets" value={tickets.length} />
+            <SummaryCard
+              icon={<TicketCheck size={20} />}
+              label={filtersActive ? "Matching tickets" : "Total tickets"}
+              value={filteredTickets.length}
+            />
             <SummaryCard icon={<CircleDot size={20} />} label="Open tickets" value={openTickets} />
             <SummaryCard
               icon={<CheckCircle2 size={20} />}
               label="Done tickets"
-              value={tickets.length - openTickets}
+              value={filteredTickets.length - openTickets}
             />
           </section>
 
@@ -197,16 +234,64 @@ export function JarvisWorkbench() {
               </button>
             </div>
 
-            {tickets.length ? (
+            <div className="filterBar">
+              <div className="filterTitle">
+                <Filter size={17} />
+                <span>Filter tickets</span>
+              </div>
+              <label className="filterField">
+                <span>Project</span>
+                <select value={projectFilter} onChange={(event) => setProjectFilter(event.target.value)}>
+                  <option value="all">All projects</option>
+                  {projects.map((project) => (
+                    <option key={project} value={project}>
+                      {project}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label className="filterField">
+                <span>Priority</span>
+                <select value={priorityFilter} onChange={(event) => setPriorityFilter(event.target.value)}>
+                  <option value="all">All priorities</option>
+                  {priorities.map((priority) => (
+                    <option key={priority} value={priority}>
+                      {priority}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              {filtersActive ? (
+                <button
+                  type="button"
+                  className="clearFiltersButton"
+                  onClick={() => {
+                    setProjectFilter("all");
+                    setPriorityFilter("all");
+                  }}
+                >
+                  Clear filters
+                </button>
+              ) : null}
+              <span className="filterCount">
+                {filteredTickets.length} of {tickets.length}
+              </span>
+            </div>
+
+            {filteredTickets.length ? (
               <div className="ticketList">
-                {tickets.map((ticket) => (
+                {filteredTickets.map((ticket) => (
                   <TicketRow key={ticket.external_id} ticket={ticket} />
                 ))}
               </div>
             ) : (
               <div className="emptyResults">
                 <h4>No tickets found</h4>
-                <p>The configured Jira projects did not return any tickets.</p>
+                <p>
+                  {tickets.length
+                    ? "No tickets match the selected project and priority."
+                    : "The configured Jira projects did not return any tickets."}
+                </p>
               </div>
             )}
           </section>
@@ -262,6 +347,7 @@ function TicketRow({ ticket }: { ticket: JiraTicket }) {
       <div className="ticketMain">
         <div className="ticketIdentity">
           <span className="ticketKey">{ticket.external_id}</span>
+          <span className="projectPill">{ticketProjectKey(ticket)}</span>
           <StatusPill status={ticket.metadata.status} />
           {ticket.metadata.priority ? <span className="priorityPill">{ticket.metadata.priority}</span> : null}
         </div>
@@ -290,4 +376,8 @@ function TicketRow({ ticket }: { ticket: JiraTicket }) {
 
 function StatusPill({ status }: { status?: string | null }) {
   return <span className="statusPill">{status || "Unknown status"}</span>;
+}
+
+function ticketProjectKey(ticket: JiraTicket) {
+  return ticket.metadata.project_key || ticket.external_id.split("-")[0] || "Unknown";
 }
