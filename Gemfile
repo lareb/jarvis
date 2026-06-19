@@ -10,7 +10,7 @@ gem "puma", ">= 5.0"
 # gem "jbuilder"
 # Use Redis adapter to run Action Cable in production
 gem "redis", ">= 4.0.1"
-gem "sidekiq", "~> 7.3"
+gem "sidekiq", "~> 8.1"
 gem "ruby-openai", "~> 7.3"
 gem "faraday", "~> 2.14"
 
