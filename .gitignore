@@ -1,0 +1,85 @@
+# Rails
+*.rbc
+*.sassc
+.sass-cache
+capybara-*.html
+.rspec
+/.bundle
+/vendor/bundle
+/log/*
+!/log/.keep
+/tmp/*
+!/tmp/.keep
+/db/*.sqlite3
+/db/*.sqlite3-journal
+/public/system
+/coverage/
+/spec/tmp
+**.orig
+rerun.txt
+pickle.txt
+.env
+.env.local
+config/master.key
+config/credentials.yml.enc
+
+# Node.js / npm
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Next.js (if used in frontend)
+.next/
+out/
+.vercel
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+*.iml
+.sublime-project
+.sublime-workspace
+
+# OS
+Thumbs.db
+.AppleDouble
+.LSOverride
+*.log
+
+# Build outputs
+/build/
+/dist/
+*.min.js
+*.min.css
+
+# Cache
+.cache/
+*.cache
+tmp/cache/*
+!tmp/cache/.keep
+
+# Misc
+.byebug_history
+.irb_history
+.ruby-version.local
+pids/
+*.pid
+*.seed
+*.pid.lock
+.ruby-version
+
+# Docker
+.dockerignore
+
+# Credentials and secrets
+.env.*.local
+.env.*.local.php
+local_settings.php
