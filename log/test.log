@@ -1,0 +1,521 @@
+  [1m[36mActiveRecord::InternalMetadata Load (0.5ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "schema_sha1"]]
+  [1m[36mActiveRecord::SchemaMigration Load (0.3ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.3ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "environment"]]
+  [1m[36mActiveRecord::SchemaMigration Load (0.1ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.1ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "environment"]]
+  [1m[36mActiveRecord::SchemaMigration Load (0.1ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.1ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "environment"]]
+  [1m[35m (300.4ms)[0m  [1m[35mDROP DATABASE IF EXISTS "jarvis_test"[0m
+  [1m[35m (28.5ms)[0m  [1m[35mCREATE DATABASE "jarvis_test" ENCODING = 'unicode'[0m
+  [1m[35mSQL (26.3ms)[0m  [1m[35mCREATE EXTENSION IF NOT EXISTS "plpgsql"[0m
+  [1m[35m (0.1ms)[0m  [1m[35mDROP TABLE IF EXISTS "ai_summaries" CASCADE[0m
+  [1m[35m (119.1ms)[0m  [1m[35mCREATE TABLE "ai_summaries" ("id" bigserial primary key, "command_id" bigint NOT NULL, "summary" text, "action_items" jsonb DEFAULT '[]' NOT NULL, "suggested_response" text, "confidence_score" decimal(5,2) DEFAULT 0.0 NOT NULL, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[35m (3.4ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_ai_summaries_on_command_id" ON "ai_summaries" ("command_id")[0m
+  [1m[35m (0.4ms)[0m  [1m[35mDROP TABLE IF EXISTS "commands" CASCADE[0m
+  [1m[35m (2.7ms)[0m  [1m[35mCREATE TABLE "commands" ("id" bigserial primary key, "user_id" bigint NOT NULL, "raw_text" text NOT NULL, "intent" character varying, "status" character varying DEFAULT 'pending' NOT NULL, "response" jsonb DEFAULT '{}' NOT NULL, "error_message" text, "started_at" timestamp(6), "completed_at" timestamp(6), "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[35m (1.4ms)[0m  [1m[35mCREATE INDEX "index_commands_on_intent" ON "commands" ("intent")[0m
+  [1m[35m (1.2ms)[0m  [1m[35mCREATE INDEX "index_commands_on_user_id_and_status" ON "commands" ("user_id", "status")[0m
+  [1m[35m (1.2ms)[0m  [1m[35mCREATE INDEX "index_commands_on_user_id" ON "commands" ("user_id")[0m
+  [1m[35m (0.1ms)[0m  [1m[35mDROP TABLE IF EXISTS "context_items" CASCADE[0m
+  [1m[35m (1.7ms)[0m  [1m[35mCREATE TABLE "context_items" ("id" bigserial primary key, "command_id" bigint NOT NULL, "source" character varying NOT NULL, "external_id" character varying, "title" character varying NOT NULL, "body" text, "metadata" jsonb DEFAULT '{}' NOT NULL, "occurred_at" timestamp(6), "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[35m (1.2ms)[0m  [1m[35mCREATE INDEX "index_context_items_on_command_id_and_source" ON "context_items" ("command_id", "source")[0m
+  [1m[35m (1.1ms)[0m  [1m[35mCREATE INDEX "index_context_items_on_command_id" ON "context_items" ("command_id")[0m
+  [1m[35m (1.1ms)[0m  [1m[35mCREATE INDEX "index_context_items_on_occurred_at" ON "context_items" ("occurred_at")[0m
+  [1m[35m (0.1ms)[0m  [1m[35mDROP TABLE IF EXISTS "integration_accounts" CASCADE[0m
+  [1m[35m (1.6ms)[0m  [1m[35mCREATE TABLE "integration_accounts" ("id" bigserial primary key, "user_id" bigint NOT NULL, "provider" character varying NOT NULL, "access_token" text, "refresh_token" text, "expires_at" timestamp(6), "metadata" jsonb DEFAULT '{}' NOT NULL, "status" character varying DEFAULT 'mock' NOT NULL, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL, CONSTRAINT integration_accounts_provider_check CHECK (provider::text = ANY (ARRAY['gmail'::character varying, 'jira'::character varying, 'github'::character varying, 'google_calendar'::character varying]::text[])))[0m
+  [1m[35m (1.2ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_integration_accounts_on_user_id_and_provider" ON "integration_accounts" ("user_id", "provider")[0m
+  [1m[35m (1.1ms)[0m  [1m[35mCREATE INDEX "index_integration_accounts_on_user_id" ON "integration_accounts" ("user_id")[0m
+  [1m[35m (0.1ms)[0m  [1m[35mDROP TABLE IF EXISTS "users" CASCADE[0m
+  [1m[35m (1.4ms)[0m  [1m[35mCREATE TABLE "users" ("id" bigserial primary key, "email" character varying NOT NULL, "name" character varying NOT NULL, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[35m (1.1ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_users_on_email" ON "users" ("email")[0m
+  [1m[35m (1.5ms)[0m  [1m[35mALTER TABLE "ai_summaries" ADD CONSTRAINT "fk_rails_3edf682975"
+FOREIGN KEY ("command_id")
+  REFERENCES "commands" ("id")
+[0m
+  [1m[35m (1.5ms)[0m  [1m[35mALTER TABLE "commands" ADD CONSTRAINT "fk_rails_370b310a97"
+FOREIGN KEY ("user_id")
+  REFERENCES "users" ("id")
+[0m
+  [1m[35m (1.3ms)[0m  [1m[35mALTER TABLE "context_items" ADD CONSTRAINT "fk_rails_ad1faeeddd"
+FOREIGN KEY ("command_id")
+  REFERENCES "commands" ("id")
+[0m
+  [1m[35m (1.4ms)[0m  [1m[35mALTER TABLE "integration_accounts" ADD CONSTRAINT "fk_rails_3da00c9f22"
+FOREIGN KEY ("user_id")
+  REFERENCES "users" ("id")
+[0m
+  [1m[35m (1.7ms)[0m  [1m[35mCREATE TABLE "schema_migrations" ("version" character varying NOT NULL PRIMARY KEY)[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.2ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[35m (1.1ms)[0m  [1m[32mINSERT INTO "schema_migrations" (version) VALUES (20260617162334)[0m
+  [1m[35m (1.1ms)[0m  [1m[32mINSERT INTO "schema_migrations" (version) VALUES
+(20260617162333),
+(20260617162332),
+(20260617162331),
+(20260617162323);[0m
+  [1m[35m (1.4ms)[0m  [1m[35mCREATE TABLE "ar_internal_metadata" ("key" character varying NOT NULL PRIMARY KEY, "value" character varying, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.3ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "environment"]]
+  [1m[36mActiveRecord::InternalMetadata Create (1.1ms)[0m  [1m[32mINSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES ('environment', 'test', '2026-06-17 16:35:46.825286', '2026-06-17 16:35:46.825288') RETURNING "key"[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.1ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "environment"]]
+  [1m[36mActiveRecord::InternalMetadata Load (0.1ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "schema_sha1"]]
+  [1m[36mActiveRecord::InternalMetadata Create (1.1ms)[0m  [1m[32mINSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES ('schema_sha1', 'c2a8fae12a48a4ad8cc5697a25551c226ab6d461', '2026-06-17 16:35:46.827278', '2026-06-17 16:35:46.827279') RETURNING "key"[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.2ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mIntegrationAccount Exists? (0.5ms)[0m  [1m[34mSELECT 1 AS one FROM "integration_accounts" WHERE "integration_accounts"."provider" = $1 AND "integration_accounts"."user_id" IS NULL LIMIT $2[0m  [["provider", "slack"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mUser Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE "users"."email" IS NULL LIMIT $1[0m  [["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN[0m
+Started POST "/api/v1/commands" for 127.0.0.1 at 2026-06-17 22:05:46 +0530
+Processing by Api::V1::CommandsController#create as HTML
+  Parameters: {"command"=>"Any update from Anthony?"}
+  [1m[36mUser Load (0.4ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."email" = $1 LIMIT $2[0m  [["email", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mUser Exists? (0.7ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE "users"."email" = $1 LIMIT $2[0m  [["email", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mUser Create (0.7ms)[0m  [1m[32mINSERT INTO "users" ("email", "name", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["email", "[FILTERED]"], ["name", "Demo User"], ["created_at", "2026-06-17 16:35:47.104752"], ["updated_at", "2026-06-17 16:35:47.104752"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mCommand Create (1.3ms)[0m  [1m[32mINSERT INTO "commands" ("user_id", "raw_text", "intent", "status", "response", "error_message", "started_at", "completed_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING "id"[0m  [["user_id", 1], ["raw_text", "Any update from Anthony?"], ["intent", nil], ["status", "pending"], ["response", "{}"], ["error_message", nil], ["started_at", nil], ["completed_at", nil], ["created_at", "2026-06-17 16:35:47.107722"], ["updated_at", "2026-06-17 16:35:47.107722"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mCommand Update (0.5ms)[0m  [1m[33mUPDATE "commands" SET "intent" = $1, "status" = $2, "started_at" = $3, "updated_at" = $4 WHERE "commands"."id" = $5[0m  [["intent", "person_update"], ["status", "processing"], ["started_at", "2026-06-17 16:35:47.110296"], ["updated_at", "2026-06-17 16:35:47.110420"], ["id", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mContextItem Create (0.7ms)[0m  [1m[32mINSERT INTO "context_items" ("command_id", "source", "external_id", "title", "body", "metadata", "occurred_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING "id"[0m  [["command_id", 1], ["source", "gmail"], ["external_id", "gmail-anthony-invoice"], ["title", "Re: Pending invoice and timesheet"], ["body", "Anthony replied about the pending invoice and requested the updated timesheet."], ["metadata", "{\"from\":\"Anthony \\u003canthony@example.com\\u003e\",\"important\":true,\"action_items\":[\"Share updated timesheet\",\"Confirm invoice amount\"]}"], ["occurred_at", "2026-06-17 14:35:47.111523"], ["created_at", "2026-06-17 16:35:47.112057"], ["updated_at", "2026-06-17 16:35:47.112057"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mContextItem Create (0.2ms)[0m  [1m[32mINSERT INTO "context_items" ("command_id", "source", "external_id", "title", "body", "metadata", "occurred_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING "id"[0m  [["command_id", 1], ["source", "jira"], ["external_id", "JAR-128"], ["title", "Invoice reconciliation follow-up"], ["body", "Anthony was mentioned on JAR-128 asking for updated billing notes."], ["metadata", "{\"priority\":\"high\",\"assignee\":\"Anthony\"}"], ["occurred_at", "2026-06-17 12:35:47.111538"], ["created_at", "2026-06-17 16:35:47.113664"], ["updated_at", "2026-06-17 16:35:47.113664"]]
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mContextItem Create (0.2ms)[0m  [1m[32mINSERT INTO "context_items" ("command_id", "source", "external_id", "title", "body", "metadata", "occurred_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING "id"[0m  [["command_id", 1], ["source", "github"], ["external_id", "pr-42-comment"], ["title", "PR #42 requested review"], ["body", "Anthony mentioned you on the API contract pull request."], ["metadata", "{\"repository\":\"jarvis/api\",\"type\":\"mention\"}"], ["occurred_at", "2026-06-17 11:35:47.111542"], ["created_at", "2026-06-17 16:35:47.114454"], ["updated_at", "2026-06-17 16:35:47.114454"]]
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAiSummary Create (0.3ms)[0m  [1m[32mINSERT INTO "ai_summaries" ("command_id", "summary", "action_items", "suggested_response", "confidence_score", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["command_id", 1], ["summary", "Anthony has recent activity: Anthony replied about the pending invoice and requested the updated timesheet.."], ["action_items", "[\"Share updated timesheet\",\"Confirm invoice amount\"]"], ["suggested_response", "Hi Anthony, thanks for the update. I will share the revised timesheet and confirm the invoice amount shortly."], ["confidence_score", "0.82"], ["created_at", "2026-06-17 16:35:47.115665"], ["updated_at", "2026-06-17 16:35:47.115665"]]
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mAiSummary Load (0.1ms)[0m  [1m[34mSELECT "ai_summaries".* FROM "ai_summaries" WHERE "ai_summaries"."command_id" = $1 LIMIT $2[0m  [["command_id", 1], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mCommand Update (0.2ms)[0m  [1m[33mUPDATE "commands" SET "status" = $1, "response" = $2, "completed_at" = $3, "updated_at" = $4 WHERE "commands"."id" = $5[0m  [["status", "completed"], ["response", "{\"intent\":\"person_update\",\"summary\":\"Anthony has recent activity: Anthony replied about the pending invoice and requested the updated timesheet..\",\"action_items\":[\"Share updated timesheet\",\"Confirm invoice amount\"],\"suggested_response\":\"Hi Anthony, thanks for the update. I will share the revised timesheet and confirm the invoice amount shortly.\",\"confidence_score\":0.82}"], ["completed_at", "2026-06-17 16:35:47.117003"], ["updated_at", "2026-06-17 16:35:47.117107"], ["id", 1]]
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+Completed 201 Created in 19ms (Views: 0.1ms | ActiveRecord: 7.7ms (11 queries, 0 cached) | GC: 0.0ms)
+  [1m[36mCommand Load (0.1ms)[0m  [1m[34mSELECT "commands".* FROM "commands" WHERE "commands"."id" = $1 LIMIT $2[0m  [["id", 1], ["LIMIT", 1]]
+  [1m[36mContextItem Pluck (0.1ms)[0m  [1m[34mSELECT "context_items"."source" FROM "context_items" WHERE "context_items"."command_id" = $1[0m  [["command_id", 1]]
+  [1m[36mAiSummary Load (0.1ms)[0m  [1m[34mSELECT "ai_summaries".* FROM "ai_summaries" WHERE "ai_summaries"."command_id" = $1 LIMIT $2[0m  [["command_id", 1], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mUser Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE "users"."email" = $1 LIMIT $2[0m  [["email", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mUser Create (0.2ms)[0m  [1m[32mINSERT INTO "users" ("email", "name", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["email", "[FILTERED]"], ["name", "Demo User"], ["created_at", "2026-06-17 16:35:47.125863"], ["updated_at", "2026-06-17 16:35:47.125863"]]
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mCommand Create (0.3ms)[0m  [1m[32mINSERT INTO "commands" ("user_id", "raw_text", "intent", "status", "response", "error_message", "started_at", "completed_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING "id"[0m  [["user_id", 2], ["raw_text", "Any update from Anthony?"], ["intent", nil], ["status", "pending"], ["response", "{}"], ["error_message", nil], ["started_at", nil], ["completed_at", nil], ["created_at", "2026-06-17 16:35:47.126744"], ["updated_at", "2026-06-17 16:35:47.126744"]]
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mCommand Update (0.2ms)[0m  [1m[33mUPDATE "commands" SET "intent" = $1, "status" = $2, "started_at" = $3, "updated_at" = $4 WHERE "commands"."id" = $5[0m  [["intent", "person_update"], ["status", "processing"], ["started_at", "2026-06-17 16:35:47.127427"], ["updated_at", "2026-06-17 16:35:47.127544"], ["id", 2]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mContextItem Create (0.2ms)[0m  [1m[32mINSERT INTO "context_items" ("command_id", "source", "external_id", "title", "body", "metadata", "occurred_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING "id"[0m  [["command_id", 2], ["source", "gmail"], ["external_id", "gmail-anthony-invoice"], ["title", "Re: Pending invoice and timesheet"], ["body", "Anthony replied about the pending invoice and requested the updated timesheet."], ["metadata", "{\"from\":\"Anthony \\u003canthony@example.com\\u003e\",\"important\":true,\"action_items\":[\"Share updated timesheet\",\"Confirm invoice amount\"]}"], ["occurred_at", "2026-06-17 14:35:47.128182"], ["created_at", "2026-06-17 16:35:47.128509"], ["updated_at", "2026-06-17 16:35:47.128509"]]
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mContextItem Create (0.2ms)[0m  [1m[32mINSERT INTO "context_items" ("command_id", "source", "external_id", "title", "body", "metadata", "occurred_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING "id"[0m  [["command_id", 2], ["source", "jira"], ["external_id", "JAR-128"], ["title", "Invoice reconciliation follow-up"], ["body", "Anthony was mentioned on JAR-128 asking for updated billing notes."], ["metadata", "{\"priority\":\"high\",\"assignee\":\"Anthony\"}"], ["occurred_at", "2026-06-17 12:35:47.128193"], ["created_at", "2026-06-17 16:35:47.129332"], ["updated_at", "2026-06-17 16:35:47.129332"]]
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mContextItem Create (0.2ms)[0m  [1m[32mINSERT INTO "context_items" ("command_id", "source", "external_id", "title", "body", "metadata", "occurred_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING "id"[0m  [["command_id", 2], ["source", "github"], ["external_id", "pr-42-comment"], ["title", "PR #42 requested review"], ["body", "Anthony mentioned you on the API contract pull request."], ["metadata", "{\"repository\":\"jarvis/api\",\"type\":\"mention\"}"], ["occurred_at", "2026-06-17 11:35:47.128197"], ["created_at", "2026-06-17 16:35:47.130083"], ["updated_at", "2026-06-17 16:35:47.130083"]]
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAiSummary Create (0.2ms)[0m  [1m[32mINSERT INTO "ai_summaries" ("command_id", "summary", "action_items", "suggested_response", "confidence_score", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["command_id", 2], ["summary", "Anthony has recent activity: Anthony replied about the pending invoice and requested the updated timesheet.."], ["action_items", "[\"Share updated timesheet\",\"Confirm invoice amount\"]"], ["suggested_response", "Hi Anthony, thanks for the update. I will share the revised timesheet and confirm the invoice amount shortly."], ["confidence_score", "0.82"], ["created_at", "2026-06-17 16:35:47.130982"], ["updated_at", "2026-06-17 16:35:47.130982"]]
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mAiSummary Load (0.1ms)[0m  [1m[34mSELECT "ai_summaries".* FROM "ai_summaries" WHERE "ai_summaries"."command_id" = $1 LIMIT $2[0m  [["command_id", 2], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mCommand Update (0.2ms)[0m  [1m[33mUPDATE "commands" SET "status" = $1, "response" = $2, "completed_at" = $3, "updated_at" = $4 WHERE "commands"."id" = $5[0m  [["status", "completed"], ["response", "{\"intent\":\"person_update\",\"summary\":\"Anthony has recent activity: Anthony replied about the pending invoice and requested the updated timesheet..\",\"action_items\":[\"Share updated timesheet\",\"Confirm invoice amount\"],\"suggested_response\":\"Hi Anthony, thanks for the update. I will share the revised timesheet and confirm the invoice amount shortly.\",\"confidence_score\":0.82}"], ["completed_at", "2026-06-17 16:35:47.131794"], ["updated_at", "2026-06-17 16:35:47.131896"], ["id", 2]]
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+Started GET "/api/v1/commands/2" for 127.0.0.1 at 2026-06-17 22:05:47 +0530
+Processing by Api::V1::CommandsController#show as HTML
+  Parameters: {"id"=>"2"}
+  [1m[36mUser Load (0.1ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."email" = $1 LIMIT $2[0m  [["email", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mCommand Load (0.1ms)[0m  [1m[34mSELECT "commands".* FROM "commands" WHERE "commands"."user_id" = $1 AND "commands"."id" = $2 LIMIT $3[0m  [["user_id", 2], ["id", 2], ["LIMIT", 1]]
+  [1m[36mContextItem Load (0.1ms)[0m  [1m[34mSELECT "context_items".* FROM "context_items" WHERE "context_items"."command_id" = $1[0m  [["command_id", 2]]
+  [1m[36mAiSummary Load (0.1ms)[0m  [1m[34mSELECT "ai_summaries".* FROM "ai_summaries" WHERE "ai_summaries"."command_id" = $1[0m  [["command_id", 2]]
+  [1m[36mContextItem Load (0.1ms)[0m  [1m[34mSELECT "context_items".* FROM "context_items" WHERE "context_items"."command_id" = $1 ORDER BY "context_items"."occurred_at" DESC[0m  [["command_id", 2]]
+Completed 200 OK in 5ms (Views: 0.1ms | ActiveRecord: 0.5ms (5 queries, 0 cached) | GC: 0.0ms)
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN[0m
+Started GET "/api/v1/daily_briefing" for 127.0.0.1 at 2026-06-17 22:05:47 +0530
+Processing by Api::V1::DailyBriefingsController#show as HTML
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.7ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "schema_sha1"]]
+  [1m[36mActiveRecord::SchemaMigration Load (0.2ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.5ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mIntegrationAccount Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "integration_accounts" WHERE "integration_accounts"."provider" = $1 AND "integration_accounts"."user_id" IS NULL LIMIT $2[0m  [["provider", "slack"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mUser Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE "users"."email" IS NULL LIMIT $1[0m  [["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN[0m
+Started POST "/api/v1/commands" for 127.0.0.1 at 2026-06-17 22:25:44 +0530
+Processing by Api::V1::CommandsController#create as HTML
+  Parameters: {"command"=>"Any update from Anthony?"}
+  [1m[36mUser Load (0.1ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."email" = $1 LIMIT $2[0m  [["email", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mUser Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE "users"."email" = $1 LIMIT $2[0m  [["email", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mUser Create (0.2ms)[0m  [1m[32mINSERT INTO "users" ("email", "name", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["email", "[FILTERED]"], ["name", "Demo User"], ["created_at", "2026-06-17 16:55:44.726847"], ["updated_at", "2026-06-17 16:55:44.726847"]]
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mCommand Create (0.4ms)[0m  [1m[32mINSERT INTO "commands" ("user_id", "raw_text", "intent", "status", "response", "error_message", "started_at", "completed_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING "id"[0m  [["user_id", 3], ["raw_text", "Any update from Anthony?"], ["intent", nil], ["status", "pending"], ["response", "{}"], ["error_message", nil], ["started_at", nil], ["completed_at", nil], ["created_at", "2026-06-17 16:55:44.728976"], ["updated_at", "2026-06-17 16:55:44.728976"]]
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mCommand Update (0.3ms)[0m  [1m[33mUPDATE "commands" SET "intent" = $1, "status" = $2, "started_at" = $3, "updated_at" = $4 WHERE "commands"."id" = $5[0m  [["intent", "person_update"], ["status", "processing"], ["started_at", "2026-06-17 16:55:44.730371"], ["updated_at", "2026-06-17 16:55:44.730497"], ["id", 3]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mContextItem Create (0.4ms)[0m  [1m[32mINSERT INTO "context_items" ("command_id", "source", "external_id", "title", "body", "metadata", "occurred_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING "id"[0m  [["command_id", 3], ["source", "gmail"], ["external_id", "gmail-anthony-invoice"], ["title", "Re: Pending invoice and timesheet"], ["body", "Anthony replied about the pending invoice and requested the updated timesheet."], ["metadata", "{\"from\":\"Anthony \\u003canthony@example.com\\u003e\",\"important\":true,\"action_items\":[\"Share updated timesheet\",\"Confirm invoice amount\"]}"], ["occurred_at", "2026-06-17 14:55:44.731295"], ["created_at", "2026-06-17 16:55:44.731830"], ["updated_at", "2026-06-17 16:55:44.731830"]]
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mContextItem Create (0.3ms)[0m  [1m[32mINSERT INTO "context_items" ("command_id", "source", "external_id", "title", "body", "metadata", "occurred_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING "id"[0m  [["command_id", 3], ["source", "jira"], ["external_id", "JAR-128"], ["title", "Invoice reconciliation follow-up"], ["body", "Anthony was mentioned on JAR-128 asking for updated billing notes."], ["metadata", "{\"priority\":\"high\",\"assignee\":\"Anthony\"}"], ["occurred_at", "2026-06-17 12:55:44.731309"], ["created_at", "2026-06-17 16:55:44.732818"], ["updated_at", "2026-06-17 16:55:44.732818"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mContextItem Create (0.4ms)[0m  [1m[32mINSERT INTO "context_items" ("command_id", "source", "external_id", "title", "body", "metadata", "occurred_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING "id"[0m  [["command_id", 3], ["source", "github"], ["external_id", "pr-42-comment"], ["title", "PR #42 requested review"], ["body", "Anthony mentioned you on the API contract pull request."], ["metadata", "{\"repository\":\"jarvis/api\",\"type\":\"mention\"}"], ["occurred_at", "2026-06-17 11:55:44.731313"], ["created_at", "2026-06-17 16:55:44.734266"], ["updated_at", "2026-06-17 16:55:44.734266"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAiSummary Create (0.3ms)[0m  [1m[32mINSERT INTO "ai_summaries" ("command_id", "summary", "action_items", "suggested_response", "confidence_score", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["command_id", 3], ["summary", "Anthony has recent activity: Anthony replied about the pending invoice and requested the updated timesheet.."], ["action_items", "[\"Share updated timesheet\",\"Confirm invoice amount\"]"], ["suggested_response", "Hi Anthony, thanks for the update. I will share the revised timesheet and confirm the invoice amount shortly."], ["confidence_score", "0.82"], ["created_at", "2026-06-17 16:55:44.736186"], ["updated_at", "2026-06-17 16:55:44.736186"]]
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mAiSummary Load (0.1ms)[0m  [1m[34mSELECT "ai_summaries".* FROM "ai_summaries" WHERE "ai_summaries"."command_id" = $1 LIMIT $2[0m  [["command_id", 3], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mCommand Update (0.3ms)[0m  [1m[33mUPDATE "commands" SET "status" = $1, "response" = $2, "completed_at" = $3, "updated_at" = $4 WHERE "commands"."id" = $5[0m  [["status", "completed"], ["response", "{\"intent\":\"person_update\",\"summary\":\"Anthony has recent activity: Anthony replied about the pending invoice and requested the updated timesheet..\",\"action_items\":[\"Share updated timesheet\",\"Confirm invoice amount\"],\"suggested_response\":\"Hi Anthony, thanks for the update. I will share the revised timesheet and confirm the invoice amount shortly.\",\"confidence_score\":0.82}"], ["completed_at", "2026-06-17 16:55:44.737599"], ["updated_at", "2026-06-17 16:55:44.737714"], ["id", 3]]
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+Completed 201 Created in 15ms (Views: 0.1ms | ActiveRecord: 4.0ms (11 queries, 0 cached) | GC: 0.0ms)
+  [1m[36mCommand Load (0.1ms)[0m  [1m[34mSELECT "commands".* FROM "commands" WHERE "commands"."id" = $1 LIMIT $2[0m  [["id", 3], ["LIMIT", 1]]
+  [1m[36mContextItem Pluck (0.1ms)[0m  [1m[34mSELECT "context_items"."source" FROM "context_items" WHERE "context_items"."command_id" = $1[0m  [["command_id", 3]]
+  [1m[36mAiSummary Load (0.1ms)[0m  [1m[34mSELECT "ai_summaries".* FROM "ai_summaries" WHERE "ai_summaries"."command_id" = $1 LIMIT $2[0m  [["command_id", 3], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mUser Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE "users"."email" = $1 LIMIT $2[0m  [["email", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mUser Create (0.1ms)[0m  [1m[32mINSERT INTO "users" ("email", "name", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["email", "[FILTERED]"], ["name", "Demo User"], ["created_at", "2026-06-17 16:55:44.742186"], ["updated_at", "2026-06-17 16:55:44.742186"]]
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mCommand Create (0.4ms)[0m  [1m[32mINSERT INTO "commands" ("user_id", "raw_text", "intent", "status", "response", "error_message", "started_at", "completed_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING "id"[0m  [["user_id", 4], ["raw_text", "Any update from Anthony?"], ["intent", nil], ["status", "pending"], ["response", "{}"], ["error_message", nil], ["started_at", nil], ["completed_at", nil], ["created_at", "2026-06-17 16:55:44.742873"], ["updated_at", "2026-06-17 16:55:44.742873"]]
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mCommand Update (0.3ms)[0m  [1m[33mUPDATE "commands" SET "intent" = $1, "status" = $2, "started_at" = $3, "updated_at" = $4 WHERE "commands"."id" = $5[0m  [["intent", "person_update"], ["status", "processing"], ["started_at", "2026-06-17 16:55:44.743689"], ["updated_at", "2026-06-17 16:55:44.743788"], ["id", 4]]
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mContextItem Create (0.2ms)[0m  [1m[32mINSERT INTO "context_items" ("command_id", "source", "external_id", "title", "body", "metadata", "occurred_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING "id"[0m  [["command_id", 4], ["source", "gmail"], ["external_id", "gmail-anthony-invoice"], ["title", "Re: Pending invoice and timesheet"], ["body", "Anthony replied about the pending invoice and requested the updated timesheet."], ["metadata", "{\"from\":\"Anthony \\u003canthony@example.com\\u003e\",\"important\":true,\"action_items\":[\"Share updated timesheet\",\"Confirm invoice amount\"]}"], ["occurred_at", "2026-06-17 14:55:44.744410"], ["created_at", "2026-06-17 16:55:44.744738"], ["updated_at", "2026-06-17 16:55:44.744738"]]
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mContextItem Create (0.2ms)[0m  [1m[32mINSERT INTO "context_items" ("command_id", "source", "external_id", "title", "body", "metadata", "occurred_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING "id"[0m  [["command_id", 4], ["source", "jira"], ["external_id", "JAR-128"], ["title", "Invoice reconciliation follow-up"], ["body", "Anthony was mentioned on JAR-128 asking for updated billing notes."], ["metadata", "{\"priority\":\"high\",\"assignee\":\"Anthony\"}"], ["occurred_at", "2026-06-17 12:55:44.744420"], ["created_at", "2026-06-17 16:55:44.745671"], ["updated_at", "2026-06-17 16:55:44.745671"]]
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mContextItem Create (0.2ms)[0m  [1m[32mINSERT INTO "context_items" ("command_id", "source", "external_id", "title", "body", "metadata", "occurred_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING "id"[0m  [["command_id", 4], ["source", "github"], ["external_id", "pr-42-comment"], ["title", "PR #42 requested review"], ["body", "Anthony mentioned you on the API contract pull request."], ["metadata", "{\"repository\":\"jarvis/api\",\"type\":\"mention\"}"], ["occurred_at", "2026-06-17 11:55:44.744424"], ["created_at", "2026-06-17 16:55:44.746427"], ["updated_at", "2026-06-17 16:55:44.746427"]]
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAiSummary Create (0.2ms)[0m  [1m[32mINSERT INTO "ai_summaries" ("command_id", "summary", "action_items", "suggested_response", "confidence_score", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["command_id", 4], ["summary", "Anthony has recent activity: Anthony replied about the pending invoice and requested the updated timesheet.."], ["action_items", "[\"Share updated timesheet\",\"Confirm invoice amount\"]"], ["suggested_response", "Hi Anthony, thanks for the update. I will share the revised timesheet and confirm the invoice amount shortly."], ["confidence_score", "0.82"], ["created_at", "2026-06-17 16:55:44.747306"], ["updated_at", "2026-06-17 16:55:44.747306"]]
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mAiSummary Load (0.1ms)[0m  [1m[34mSELECT "ai_summaries".* FROM "ai_summaries" WHERE "ai_summaries"."command_id" = $1 LIMIT $2[0m  [["command_id", 4], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mCommand Update (0.2ms)[0m  [1m[33mUPDATE "commands" SET "status" = $1, "response" = $2, "completed_at" = $3, "updated_at" = $4 WHERE "commands"."id" = $5[0m  [["status", "completed"], ["response", "{\"intent\":\"person_update\",\"summary\":\"Anthony has recent activity: Anthony replied about the pending invoice and requested the updated timesheet..\",\"action_items\":[\"Share updated timesheet\",\"Confirm invoice amount\"],\"suggested_response\":\"Hi Anthony, thanks for the update. I will share the revised timesheet and confirm the invoice amount shortly.\",\"confidence_score\":0.82}"], ["completed_at", "2026-06-17 16:55:44.748139"], ["updated_at", "2026-06-17 16:55:44.748249"], ["id", 4]]
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+Started GET "/api/v1/commands/4" for 127.0.0.1 at 2026-06-17 22:25:44 +0530
+Processing by Api::V1::CommandsController#show as HTML
+  Parameters: {"id"=>"4"}
+  [1m[36mUser Load (0.1ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."email" = $1 LIMIT $2[0m  [["email", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mCommand Load (0.1ms)[0m  [1m[34mSELECT "commands".* FROM "commands" WHERE "commands"."user_id" = $1 AND "commands"."id" = $2 LIMIT $3[0m  [["user_id", 4], ["id", 4], ["LIMIT", 1]]
+  [1m[36mContextItem Load (0.1ms)[0m  [1m[34mSELECT "context_items".* FROM "context_items" WHERE "context_items"."command_id" = $1[0m  [["command_id", 4]]
+  [1m[36mAiSummary Load (0.1ms)[0m  [1m[34mSELECT "ai_summaries".* FROM "ai_summaries" WHERE "ai_summaries"."command_id" = $1[0m  [["command_id", 4]]
+  [1m[36mContextItem Load (0.1ms)[0m  [1m[34mSELECT "context_items".* FROM "context_items" WHERE "context_items"."command_id" = $1 ORDER BY "context_items"."occurred_at" DESC[0m  [["command_id", 4]]
+Completed 200 OK in 4ms (Views: 0.1ms | ActiveRecord: 0.5ms (5 queries, 0 cached) | GC: 0.0ms)
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN[0m
+Started GET "/api/v1/daily_briefing" for 127.0.0.1 at 2026-06-17 22:25:44 +0530
+Processing by Api::V1::DailyBriefingsController#show as HTML
+Completed 200 OK in 0ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.8ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "schema_sha1"]]
+  [1m[36mActiveRecord::SchemaMigration Load (85.1ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mIntegrationAccount Exists? (0.6ms)[0m  [1m[34mSELECT 1 AS one FROM "integration_accounts" WHERE "integration_accounts"."provider" = $1 AND "integration_accounts"."user_id" IS NULL LIMIT $2[0m  [["provider", "slack"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mUser Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE "users"."email" IS NULL LIMIT $1[0m  [["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN[0m
+Started POST "/api/v1/commands" for 127.0.0.1 at 2026-06-18 16:49:05 +0530
+Processing by Api::V1::CommandsController#create as HTML
+  Parameters: {"command"=>"Any update from Anthony?"}
+  [1m[36mUser Load (0.3ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."email" = $1 LIMIT $2[0m  [["email", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mUser Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE "users"."email" = $1 LIMIT $2[0m  [["email", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mUser Create (0.8ms)[0m  [1m[32mINSERT INTO "users" ("email", "name", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["email", "[FILTERED]"], ["name", "Demo User"], ["created_at", "2026-06-18 11:19:05.310064"], ["updated_at", "2026-06-18 11:19:05.310064"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mCommand Create (1.3ms)[0m  [1m[32mINSERT INTO "commands" ("user_id", "raw_text", "intent", "status", "response", "error_message", "started_at", "completed_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING "id"[0m  [["user_id", 5], ["raw_text", "Any update from Anthony?"], ["intent", nil], ["status", "pending"], ["response", "{}"], ["error_message", nil], ["started_at", nil], ["completed_at", nil], ["created_at", "2026-06-18 11:19:05.313019"], ["updated_at", "2026-06-18 11:19:05.313019"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mCommand Update (0.6ms)[0m  [1m[33mUPDATE "commands" SET "intent" = $1, "status" = $2, "started_at" = $3, "updated_at" = $4 WHERE "commands"."id" = $5[0m  [["intent", "person_update"], ["status", "processing"], ["started_at", "2026-06-18 11:19:05.315572"], ["updated_at", "2026-06-18 11:19:05.315719"], ["id", 5]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mContextItem Create (1.0ms)[0m  [1m[32mINSERT INTO "context_items" ("command_id", "source", "external_id", "title", "body", "metadata", "occurred_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING "id"[0m  [["command_id", 5], ["source", "gmail"], ["external_id", "message-1"], ["title", "Update from Anthony"], ["body", "Anthony sent a project update."], ["metadata", "{\"action_items\":[\"Review Anthony's update\"],\"important\":true}"], ["occurred_at", "2026-06-18 10:19:05.297154"], ["created_at", "2026-06-18 11:19:05.317545"], ["updated_at", "2026-06-18 11:19:05.317545"]]
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mContextItem Create (0.2ms)[0m  [1m[32mINSERT INTO "context_items" ("command_id", "source", "external_id", "title", "body", "metadata", "occurred_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING "id"[0m  [["command_id", 5], ["source", "jira"], ["external_id", "JAR-1"], ["title", "Project issue"], ["body", "Anthony is involved in this issue."], ["metadata", "{}"], ["occurred_at", "2026-06-18 09:19:05.301755"], ["created_at", "2026-06-18 11:19:05.319230"], ["updated_at", "2026-06-18 11:19:05.319230"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mContextItem Create (0.3ms)[0m  [1m[32mINSERT INTO "context_items" ("command_id", "source", "external_id", "title", "body", "metadata", "occurred_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING "id"[0m  [["command_id", 5], ["source", "github"], ["external_id", "123"], ["title", "Pull request"], ["body", "Anthony is involved in this pull request."], ["metadata", "{}"], ["occurred_at", "2026-06-18 08:19:05.301814"], ["created_at", "2026-06-18 11:19:05.320176"], ["updated_at", "2026-06-18 11:19:05.320176"]]
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAiSummary Create (1.0ms)[0m  [1m[32mINSERT INTO "ai_summaries" ("command_id", "summary", "action_items", "suggested_response", "confidence_score", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["command_id", 5], ["summary", "Anthony has recent activity: Anthony sent a project update.."], ["action_items", "[\"Review Anthony's update\"]"], ["suggested_response", "Hi Anthony, thanks for the update. I’ll review this and follow up shortly."], ["confidence_score", "0.82"], ["created_at", "2026-06-18 11:19:05.321557"], ["updated_at", "2026-06-18 11:19:05.321557"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mAiSummary Load (0.1ms)[0m  [1m[34mSELECT "ai_summaries".* FROM "ai_summaries" WHERE "ai_summaries"."command_id" = $1 LIMIT $2[0m  [["command_id", 5], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mCommand Update (0.3ms)[0m  [1m[33mUPDATE "commands" SET "status" = $1, "response" = $2, "completed_at" = $3, "updated_at" = $4 WHERE "commands"."id" = $5[0m  [["status", "completed"], ["response", "{\"intent\":\"person_update\",\"summary\":\"Anthony has recent activity: Anthony sent a project update..\",\"action_items\":[\"Review Anthony's update\"],\"suggested_response\":\"Hi Anthony, thanks for the update. I’ll review this and follow up shortly.\",\"confidence_score\":0.82}"], ["completed_at", "2026-06-18 11:19:05.323806"], ["updated_at", "2026-06-18 11:19:05.323932"], ["id", 5]]
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+Completed 201 Created in 18ms (Views: 0.1ms | ActiveRecord: 7.3ms (11 queries, 0 cached) | GC: 0.0ms)
+  [1m[36mCommand Load (0.1ms)[0m  [1m[34mSELECT "commands".* FROM "commands" WHERE "commands"."id" = $1 LIMIT $2[0m  [["id", 5], ["LIMIT", 1]]
+  [1m[36mContextItem Pluck (0.1ms)[0m  [1m[34mSELECT "context_items"."source" FROM "context_items" WHERE "context_items"."command_id" = $1[0m  [["command_id", 5]]
+  [1m[36mAiSummary Load (0.1ms)[0m  [1m[34mSELECT "ai_summaries".* FROM "ai_summaries" WHERE "ai_summaries"."command_id" = $1 LIMIT $2[0m  [["command_id", 5], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mUser Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE "users"."email" = $1 LIMIT $2[0m  [["email", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mUser Create (0.1ms)[0m  [1m[32mINSERT INTO "users" ("email", "name", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["email", "[FILTERED]"], ["name", "Demo User"], ["created_at", "2026-06-18 11:19:05.328945"], ["updated_at", "2026-06-18 11:19:05.328945"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mCommand Create (0.2ms)[0m  [1m[32mINSERT INTO "commands" ("user_id", "raw_text", "intent", "status", "response", "error_message", "started_at", "completed_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING "id"[0m  [["user_id", 6], ["raw_text", "Any update from Anthony?"], ["intent", nil], ["status", "pending"], ["response", "{}"], ["error_message", nil], ["started_at", nil], ["completed_at", nil], ["created_at", "2026-06-18 11:19:05.329696"], ["updated_at", "2026-06-18 11:19:05.329696"]]
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mCommand Update (0.2ms)[0m  [1m[33mUPDATE "commands" SET "intent" = $1, "status" = $2, "started_at" = $3, "updated_at" = $4 WHERE "commands"."id" = $5[0m  [["intent", "person_update"], ["status", "processing"], ["started_at", "2026-06-18 11:19:05.330311"], ["updated_at", "2026-06-18 11:19:05.330422"], ["id", 6]]
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mContextItem Create (0.2ms)[0m  [1m[32mINSERT INTO "context_items" ("command_id", "source", "external_id", "title", "body", "metadata", "occurred_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING "id"[0m  [["command_id", 6], ["source", "gmail"], ["external_id", "message-1"], ["title", "Update from Anthony"], ["body", "Anthony sent a project update."], ["metadata", "{\"action_items\":[\"Review Anthony's update\"],\"important\":true}"], ["occurred_at", "2026-06-18 10:19:05.328172"], ["created_at", "2026-06-18 11:19:05.331319"], ["updated_at", "2026-06-18 11:19:05.331319"]]
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mContextItem Create (0.2ms)[0m  [1m[32mINSERT INTO "context_items" ("command_id", "source", "external_id", "title", "body", "metadata", "occurred_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING "id"[0m  [["command_id", 6], ["source", "jira"], ["external_id", "JAR-1"], ["title", "Project issue"], ["body", "Anthony is involved in this issue."], ["metadata", "{}"], ["occurred_at", "2026-06-18 09:19:05.328258"], ["created_at", "2026-06-18 11:19:05.332136"], ["updated_at", "2026-06-18 11:19:05.332136"]]
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mContextItem Create (0.2ms)[0m  [1m[32mINSERT INTO "context_items" ("command_id", "source", "external_id", "title", "body", "metadata", "occurred_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING "id"[0m  [["command_id", 6], ["source", "github"], ["external_id", "123"], ["title", "Pull request"], ["body", "Anthony is involved in this pull request."], ["metadata", "{}"], ["occurred_at", "2026-06-18 08:19:05.328291"], ["created_at", "2026-06-18 11:19:05.332923"], ["updated_at", "2026-06-18 11:19:05.332923"]]
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAiSummary Create (0.3ms)[0m  [1m[32mINSERT INTO "ai_summaries" ("command_id", "summary", "action_items", "suggested_response", "confidence_score", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["command_id", 6], ["summary", "Anthony has recent activity: Anthony sent a project update.."], ["action_items", "[\"Review Anthony's update\"]"], ["suggested_response", "Hi Anthony, thanks for the update. I’ll review this and follow up shortly."], ["confidence_score", "0.82"], ["created_at", "2026-06-18 11:19:05.333780"], ["updated_at", "2026-06-18 11:19:05.333780"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mAiSummary Load (0.1ms)[0m  [1m[34mSELECT "ai_summaries".* FROM "ai_summaries" WHERE "ai_summaries"."command_id" = $1 LIMIT $2[0m  [["command_id", 6], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mCommand Update (0.2ms)[0m  [1m[33mUPDATE "commands" SET "status" = $1, "response" = $2, "completed_at" = $3, "updated_at" = $4 WHERE "commands"."id" = $5[0m  [["status", "completed"], ["response", "{\"intent\":\"person_update\",\"summary\":\"Anthony has recent activity: Anthony sent a project update..\",\"action_items\":[\"Review Anthony's update\"],\"suggested_response\":\"Hi Anthony, thanks for the update. I’ll review this and follow up shortly.\",\"confidence_score\":0.82}"], ["completed_at", "2026-06-18 11:19:05.334735"], ["updated_at", "2026-06-18 11:19:05.334841"], ["id", 6]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+Started GET "/api/v1/commands/6" for 127.0.0.1 at 2026-06-18 16:49:05 +0530
+Processing by Api::V1::CommandsController#show as HTML
+  Parameters: {"id"=>"6"}
+  [1m[36mUser Load (0.1ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."email" = $1 LIMIT $2[0m  [["email", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mCommand Load (0.1ms)[0m  [1m[34mSELECT "commands".* FROM "commands" WHERE "commands"."user_id" = $1 AND "commands"."id" = $2 LIMIT $3[0m  [["user_id", 6], ["id", 6], ["LIMIT", 1]]
+  [1m[36mContextItem Load (0.1ms)[0m  [1m[34mSELECT "context_items".* FROM "context_items" WHERE "context_items"."command_id" = $1[0m  [["command_id", 6]]
+  [1m[36mAiSummary Load (0.1ms)[0m  [1m[34mSELECT "ai_summaries".* FROM "ai_summaries" WHERE "ai_summaries"."command_id" = $1[0m  [["command_id", 6]]
+  [1m[36mContextItem Load (0.1ms)[0m  [1m[34mSELECT "context_items".* FROM "context_items" WHERE "context_items"."command_id" = $1 ORDER BY "context_items"."occurred_at" DESC[0m  [["command_id", 6]]
+Completed 200 OK in 3ms (Views: 0.1ms | ActiveRecord: 0.5ms (5 queries, 0 cached) | GC: 0.0ms)
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN[0m
+Started GET "/api/v1/daily_briefing" for 127.0.0.1 at 2026-06-18 16:49:05 +0530
+Processing by Api::V1::DailyBriefingsController#show as HTML
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."email" = $1 LIMIT $2[0m  [["email", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mUser Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE "users"."email" = $1 LIMIT $2[0m  [["email", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mUser Create (0.2ms)[0m  [1m[32mINSERT INTO "users" ("email", "name", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["email", "[FILTERED]"], ["name", "Demo User"], ["created_at", "2026-06-18 11:19:05.342980"], ["updated_at", "2026-06-18 11:19:05.342980"]]
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+Completed 200 OK in 2ms (Views: 0.1ms | ActiveRecord: 0.8ms (3 queries, 0 cached) | GC: 0.0ms)
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.4ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "schema_sha1"]]
+  [1m[36mActiveRecord::SchemaMigration Load (0.2ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.2ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "environment"]]
+  [1m[36mActiveRecord::SchemaMigration Load (0.1ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.1ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "environment"]]
+  [1m[36mActiveRecord::SchemaMigration Load (0.1ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.1ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "environment"]]
+  [1m[35m (104.3ms)[0m  [1m[35mDROP DATABASE IF EXISTS "jarvis_test"[0m
+  [1m[35m (81.4ms)[0m  [1m[35mCREATE DATABASE "jarvis_test" ENCODING = 'unicode'[0m
+  [1m[35mSQL (15.4ms)[0m  [1m[35mCREATE EXTENSION IF NOT EXISTS "plpgsql"[0m
+  [1m[35m (0.1ms)[0m  [1m[35mDROP TABLE IF EXISTS "ai_summaries" CASCADE[0m
+  [1m[35m (3.3ms)[0m  [1m[35mCREATE TABLE "ai_summaries" ("id" bigserial primary key, "command_id" bigint NOT NULL, "summary" text, "action_items" jsonb DEFAULT '[]' NOT NULL, "suggested_response" text, "confidence_score" decimal(5,2) DEFAULT 0.0 NOT NULL, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[35m (1.2ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_ai_summaries_on_command_id" ON "ai_summaries" ("command_id")[0m
+  [1m[35m (0.1ms)[0m  [1m[35mDROP TABLE IF EXISTS "commands" CASCADE[0m
+  [1m[35m (1.6ms)[0m  [1m[35mCREATE TABLE "commands" ("id" bigserial primary key, "user_id" bigint NOT NULL, "raw_text" text NOT NULL, "intent" character varying, "status" character varying DEFAULT 'pending' NOT NULL, "response" jsonb DEFAULT '{}' NOT NULL, "error_message" text, "started_at" timestamp(6), "completed_at" timestamp(6), "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[35m (1.2ms)[0m  [1m[35mCREATE INDEX "index_commands_on_intent" ON "commands" ("intent")[0m
+  [1m[35m (1.1ms)[0m  [1m[35mCREATE INDEX "index_commands_on_user_id_and_status" ON "commands" ("user_id", "status")[0m
+  [1m[35m (1.1ms)[0m  [1m[35mCREATE INDEX "index_commands_on_user_id" ON "commands" ("user_id")[0m
+  [1m[35m (0.1ms)[0m  [1m[35mDROP TABLE IF EXISTS "context_items" CASCADE[0m
+  [1m[35m (1.8ms)[0m  [1m[35mCREATE TABLE "context_items" ("id" bigserial primary key, "command_id" bigint NOT NULL, "source" character varying NOT NULL, "external_id" character varying, "title" character varying NOT NULL, "body" text, "metadata" jsonb DEFAULT '{}' NOT NULL, "occurred_at" timestamp(6), "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[35m (1.1ms)[0m  [1m[35mCREATE INDEX "index_context_items_on_command_id_and_source" ON "context_items" ("command_id", "source")[0m
+  [1m[35m (1.1ms)[0m  [1m[35mCREATE INDEX "index_context_items_on_command_id" ON "context_items" ("command_id")[0m
+  [1m[35m (1.2ms)[0m  [1m[35mCREATE INDEX "index_context_items_on_occurred_at" ON "context_items" ("occurred_at")[0m
+  [1m[35m (0.1ms)[0m  [1m[35mDROP TABLE IF EXISTS "integration_accounts" CASCADE[0m
+  [1m[35m (1.6ms)[0m  [1m[35mCREATE TABLE "integration_accounts" ("id" bigserial primary key, "user_id" bigint NOT NULL, "provider" character varying NOT NULL, "access_token" text, "refresh_token" text, "expires_at" timestamp(6), "metadata" jsonb DEFAULT '{}' NOT NULL, "status" character varying DEFAULT 'expired' NOT NULL, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL, CONSTRAINT integration_accounts_provider_check CHECK (provider::text = ANY (ARRAY['gmail'::character varying, 'jira'::character varying, 'github'::character varying, 'google_calendar'::character varying]::text[])))[0m
+  [1m[35m (1.1ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_integration_accounts_on_user_id_and_provider" ON "integration_accounts" ("user_id", "provider")[0m
+  [1m[35m (1.1ms)[0m  [1m[35mCREATE INDEX "index_integration_accounts_on_user_id" ON "integration_accounts" ("user_id")[0m
+  [1m[35m (0.1ms)[0m  [1m[35mDROP TABLE IF EXISTS "users" CASCADE[0m
+  [1m[35m (1.5ms)[0m  [1m[35mCREATE TABLE "users" ("id" bigserial primary key, "email" character varying NOT NULL, "name" character varying NOT NULL, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[35m (1.1ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_users_on_email" ON "users" ("email")[0m
+  [1m[35m (2.0ms)[0m  [1m[35mALTER TABLE "ai_summaries" ADD CONSTRAINT "fk_rails_3edf682975"
+FOREIGN KEY ("command_id")
+  REFERENCES "commands" ("id")
+[0m
+  [1m[35m (1.2ms)[0m  [1m[35mALTER TABLE "commands" ADD CONSTRAINT "fk_rails_370b310a97"
+FOREIGN KEY ("user_id")
+  REFERENCES "users" ("id")
+[0m
+  [1m[35m (1.2ms)[0m  [1m[35mALTER TABLE "context_items" ADD CONSTRAINT "fk_rails_ad1faeeddd"
+FOREIGN KEY ("command_id")
+  REFERENCES "commands" ("id")
+[0m
+  [1m[35m (1.4ms)[0m  [1m[35mALTER TABLE "integration_accounts" ADD CONSTRAINT "fk_rails_3da00c9f22"
+FOREIGN KEY ("user_id")
+  REFERENCES "users" ("id")
+[0m
+  [1m[35m (1.4ms)[0m  [1m[35mCREATE TABLE "schema_migrations" ("version" character varying NOT NULL PRIMARY KEY)[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.2ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[35m (1.2ms)[0m  [1m[32mINSERT INTO "schema_migrations" (version) VALUES (20260618120000)[0m
+  [1m[35m (0.9ms)[0m  [1m[32mINSERT INTO "schema_migrations" (version) VALUES
+(20260617162334),
+(20260617162333),
+(20260617162332),
+(20260617162331),
+(20260617162323);[0m
+  [1m[35m (1.4ms)[0m  [1m[35mCREATE TABLE "ar_internal_metadata" ("key" character varying NOT NULL PRIMARY KEY, "value" character varying, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.3ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "environment"]]
+  [1m[36mActiveRecord::InternalMetadata Create (1.1ms)[0m  [1m[32mINSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES ('environment', 'test', '2026-06-18 11:32:29.493738', '2026-06-18 11:32:29.493740') RETURNING "key"[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.1ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "environment"]]
+  [1m[36mActiveRecord::InternalMetadata Load (0.1ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "schema_sha1"]]
+  [1m[36mActiveRecord::InternalMetadata Create (1.0ms)[0m  [1m[32mINSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES ('schema_sha1', '2f0049a61fec73952d1962fce3ff7a7bbafba1c9', '2026-06-18 11:32:29.495545', '2026-06-18 11:32:29.495546') RETURNING "key"[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.3ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mIntegrationAccount Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "integration_accounts" WHERE "integration_accounts"."provider" = $1 AND "integration_accounts"."user_id" IS NULL LIMIT $2[0m  [["provider", "slack"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mUser Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE "users"."email" IS NULL LIMIT $1[0m  [["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN[0m
+Started POST "/api/v1/commands" for 127.0.0.1 at 2026-06-18 17:02:29 +0530
+Processing by Api::V1::CommandsController#create as HTML
+  Parameters: {"command"=>"Any update from Anthony?"}
+  [1m[36mUser Load (0.1ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."email" = $1 LIMIT $2[0m  [["email", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mUser Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE "users"."email" = $1 LIMIT $2[0m  [["email", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mUser Create (0.3ms)[0m  [1m[32mINSERT INTO "users" ("email", "name", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["email", "[FILTERED]"], ["name", "Demo User"], ["created_at", "2026-06-18 11:32:29.622729"], ["updated_at", "2026-06-18 11:32:29.622729"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mCommand Create (0.5ms)[0m  [1m[32mINSERT INTO "commands" ("user_id", "raw_text", "intent", "status", "response", "error_message", "started_at", "completed_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING "id"[0m  [["user_id", 1], ["raw_text", "Any update from Anthony?"], ["intent", nil], ["status", "pending"], ["response", "{}"], ["error_message", nil], ["started_at", nil], ["completed_at", nil], ["created_at", "2026-06-18 11:32:29.625111"], ["updated_at", "2026-06-18 11:32:29.625111"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mCommand Update (0.4ms)[0m  [1m[33mUPDATE "commands" SET "intent" = $1, "status" = $2, "started_at" = $3, "updated_at" = $4 WHERE "commands"."id" = $5[0m  [["intent", "person_update"], ["status", "processing"], ["started_at", "2026-06-18 11:32:29.626455"], ["updated_at", "2026-06-18 11:32:29.626595"], ["id", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mContextItem Create (0.5ms)[0m  [1m[32mINSERT INTO "context_items" ("command_id", "source", "external_id", "title", "body", "metadata", "occurred_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING "id"[0m  [["command_id", 1], ["source", "gmail"], ["external_id", "message-1"], ["title", "Update from Anthony"], ["body", "Anthony sent a project update."], ["metadata", "{\"action_items\":[\"Review Anthony's update\"],\"important\":true}"], ["occurred_at", "2026-06-18 10:32:29.614107"], ["created_at", "2026-06-18 11:32:29.628168"], ["updated_at", "2026-06-18 11:32:29.628168"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mContextItem Create (0.3ms)[0m  [1m[32mINSERT INTO "context_items" ("command_id", "source", "external_id", "title", "body", "metadata", "occurred_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING "id"[0m  [["command_id", 1], ["source", "jira"], ["external_id", "JAR-1"], ["title", "Project issue"], ["body", "Anthony is involved in this issue."], ["metadata", "{}"], ["occurred_at", "2026-06-18 09:32:29.614968"], ["created_at", "2026-06-18 11:32:29.629358"], ["updated_at", "2026-06-18 11:32:29.629358"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mContextItem Create (0.4ms)[0m  [1m[32mINSERT INTO "context_items" ("command_id", "source", "external_id", "title", "body", "metadata", "occurred_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING "id"[0m  [["command_id", 1], ["source", "github"], ["external_id", "123"], ["title", "Pull request"], ["body", "Anthony is involved in this pull request."], ["metadata", "{}"], ["occurred_at", "2026-06-18 08:32:29.615018"], ["created_at", "2026-06-18 11:32:29.630398"], ["updated_at", "2026-06-18 11:32:29.630398"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAiSummary Create (0.4ms)[0m  [1m[32mINSERT INTO "ai_summaries" ("command_id", "summary", "action_items", "suggested_response", "confidence_score", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["command_id", 1], ["summary", "Anthony has recent activity: Anthony sent a project update.."], ["action_items", "[\"Review Anthony's update\"]"], ["suggested_response", "Hi Anthony, thanks for the update. I’ll review this and follow up shortly."], ["confidence_score", "0.82"], ["created_at", "2026-06-18 11:32:29.631818"], ["updated_at", "2026-06-18 11:32:29.631818"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mAiSummary Load (0.1ms)[0m  [1m[34mSELECT "ai_summaries".* FROM "ai_summaries" WHERE "ai_summaries"."command_id" = $1 LIMIT $2[0m  [["command_id", 1], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mCommand Update (0.3ms)[0m  [1m[33mUPDATE "commands" SET "status" = $1, "response" = $2, "completed_at" = $3, "updated_at" = $4 WHERE "commands"."id" = $5[0m  [["status", "completed"], ["response", "{\"intent\":\"person_update\",\"summary\":\"Anthony has recent activity: Anthony sent a project update..\",\"action_items\":[\"Review Anthony's update\"],\"suggested_response\":\"Hi Anthony, thanks for the update. I’ll review this and follow up shortly.\",\"confidence_score\":0.82}"], ["completed_at", "2026-06-18 11:32:29.633399"], ["updated_at", "2026-06-18 11:32:29.633521"], ["id", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+Completed 201 Created in 15ms (Views: 0.1ms | ActiveRecord: 4.7ms (11 queries, 0 cached) | GC: 0.0ms)
+  [1m[36mCommand Load (0.1ms)[0m  [1m[34mSELECT "commands".* FROM "commands" WHERE "commands"."id" = $1 LIMIT $2[0m  [["id", 1], ["LIMIT", 1]]
+  [1m[36mContextItem Pluck (0.1ms)[0m  [1m[34mSELECT "context_items"."source" FROM "context_items" WHERE "context_items"."command_id" = $1[0m  [["command_id", 1]]
+  [1m[36mAiSummary Load (0.1ms)[0m  [1m[34mSELECT "ai_summaries".* FROM "ai_summaries" WHERE "ai_summaries"."command_id" = $1 LIMIT $2[0m  [["command_id", 1], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mUser Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE "users"."email" = $1 LIMIT $2[0m  [["email", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mUser Create (0.1ms)[0m  [1m[32mINSERT INTO "users" ("email", "name", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["email", "[FILTERED]"], ["name", "Demo User"], ["created_at", "2026-06-18 11:32:29.638838"], ["updated_at", "2026-06-18 11:32:29.638838"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mCommand Create (0.3ms)[0m  [1m[32mINSERT INTO "commands" ("user_id", "raw_text", "intent", "status", "response", "error_message", "started_at", "completed_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING "id"[0m  [["user_id", 2], ["raw_text", "Any update from Anthony?"], ["intent", nil], ["status", "pending"], ["response", "{}"], ["error_message", nil], ["started_at", nil], ["completed_at", nil], ["created_at", "2026-06-18 11:32:29.639679"], ["updated_at", "2026-06-18 11:32:29.639679"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mCommand Update (0.3ms)[0m  [1m[33mUPDATE "commands" SET "intent" = $1, "status" = $2, "started_at" = $3, "updated_at" = $4 WHERE "commands"."id" = $5[0m  [["intent", "person_update"], ["status", "processing"], ["started_at", "2026-06-18 11:32:29.640411"], ["updated_at", "2026-06-18 11:32:29.640522"], ["id", 2]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mContextItem Create (0.3ms)[0m  [1m[32mINSERT INTO "context_items" ("command_id", "source", "external_id", "title", "body", "metadata", "occurred_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING "id"[0m  [["command_id", 2], ["source", "gmail"], ["external_id", "message-1"], ["title", "Update from Anthony"], ["body", "Anthony sent a project update."], ["metadata", "{\"action_items\":[\"Review Anthony's update\"],\"important\":true}"], ["occurred_at", "2026-06-18 10:32:29.638082"], ["created_at", "2026-06-18 11:32:29.641606"], ["updated_at", "2026-06-18 11:32:29.641606"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mContextItem Create (0.3ms)[0m  [1m[32mINSERT INTO "context_items" ("command_id", "source", "external_id", "title", "body", "metadata", "occurred_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING "id"[0m  [["command_id", 2], ["source", "jira"], ["external_id", "JAR-1"], ["title", "Project issue"], ["body", "Anthony is involved in this issue."], ["metadata", "{}"], ["occurred_at", "2026-06-18 09:32:29.638181"], ["created_at", "2026-06-18 11:32:29.642474"], ["updated_at", "2026-06-18 11:32:29.642474"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mContextItem Create (0.4ms)[0m  [1m[32mINSERT INTO "context_items" ("command_id", "source", "external_id", "title", "body", "metadata", "occurred_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING "id"[0m  [["command_id", 2], ["source", "github"], ["external_id", "123"], ["title", "Pull request"], ["body", "Anthony is involved in this pull request."], ["metadata", "{}"], ["occurred_at", "2026-06-18 08:32:29.638214"], ["created_at", "2026-06-18 11:32:29.643299"], ["updated_at", "2026-06-18 11:32:29.643299"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAiSummary Create (0.3ms)[0m  [1m[32mINSERT INTO "ai_summaries" ("command_id", "summary", "action_items", "suggested_response", "confidence_score", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["command_id", 2], ["summary", "Anthony has recent activity: Anthony sent a project update.."], ["action_items", "[\"Review Anthony's update\"]"], ["suggested_response", "Hi Anthony, thanks for the update. I’ll review this and follow up shortly."], ["confidence_score", "0.82"], ["created_at", "2026-06-18 11:32:29.644531"], ["updated_at", "2026-06-18 11:32:29.644531"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mAiSummary Load (0.1ms)[0m  [1m[34mSELECT "ai_summaries".* FROM "ai_summaries" WHERE "ai_summaries"."command_id" = $1 LIMIT $2[0m  [["command_id", 2], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mCommand Update (0.3ms)[0m  [1m[33mUPDATE "commands" SET "status" = $1, "response" = $2, "completed_at" = $3, "updated_at" = $4 WHERE "commands"."id" = $5[0m  [["status", "completed"], ["response", "{\"intent\":\"person_update\",\"summary\":\"Anthony has recent activity: Anthony sent a project update..\",\"action_items\":[\"Review Anthony's update\"],\"suggested_response\":\"Hi Anthony, thanks for the update. I’ll review this and follow up shortly.\",\"confidence_score\":0.82}"], ["completed_at", "2026-06-18 11:32:29.645477"], ["updated_at", "2026-06-18 11:32:29.645587"], ["id", 2]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+Started GET "/api/v1/commands/2" for 127.0.0.1 at 2026-06-18 17:02:29 +0530
+Processing by Api::V1::CommandsController#show as HTML
+  Parameters: {"id"=>"2"}
+  [1m[36mUser Load (0.1ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."email" = $1 LIMIT $2[0m  [["email", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mCommand Load (0.1ms)[0m  [1m[34mSELECT "commands".* FROM "commands" WHERE "commands"."user_id" = $1 AND "commands"."id" = $2 LIMIT $3[0m  [["user_id", 2], ["id", 2], ["LIMIT", 1]]
+  [1m[36mContextItem Load (0.1ms)[0m  [1m[34mSELECT "context_items".* FROM "context_items" WHERE "context_items"."command_id" = $1[0m  [["command_id", 2]]
+  [1m[36mAiSummary Load (0.1ms)[0m  [1m[34mSELECT "ai_summaries".* FROM "ai_summaries" WHERE "ai_summaries"."command_id" = $1[0m  [["command_id", 2]]
+  [1m[36mContextItem Load (0.1ms)[0m  [1m[34mSELECT "context_items".* FROM "context_items" WHERE "context_items"."command_id" = $1 ORDER BY "context_items"."occurred_at" DESC[0m  [["command_id", 2]]
+Completed 200 OK in 4ms (Views: 0.1ms | ActiveRecord: 0.5ms (5 queries, 0 cached) | GC: 0.0ms)
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN[0m
+Started GET "/api/v1/daily_briefing" for 127.0.0.1 at 2026-06-18 17:02:29 +0530
+Processing by Api::V1::DailyBriefingsController#show as HTML
+  [1m[36mUser Load (0.1ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."email" = $1 LIMIT $2[0m  [["email", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mUser Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE "users"."email" = $1 LIMIT $2[0m  [["email", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mUser Create (0.1ms)[0m  [1m[32mINSERT INTO "users" ("email", "name", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["email", "[FILTERED]"], ["name", "Demo User"], ["created_at", "2026-06-18 11:32:29.653996"], ["updated_at", "2026-06-18 11:32:29.653996"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+Completed 200 OK in 2ms (Views: 0.1ms | ActiveRecord: 0.6ms (3 queries, 0 cached) | GC: 0.0ms)
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m

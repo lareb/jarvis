@@ -1,0 +1,833 @@
+  [1m[35m (108.2ms)[0m  [1m[35mCREATE DATABASE "jarvis_development" ENCODING = 'unicode'[0m
+  [1m[35m (108.5ms)[0m  [1m[35mCREATE DATABASE "jarvis_development" ENCODING = 'unicode'[0m
+  [1m[35m (109.1ms)[0m  [1m[35mCREATE DATABASE "jarvis_development" ENCODING = 'unicode'[0m
+  [1m[35m (104.1ms)[0m  [1m[35mCREATE DATABASE "jarvis_development" ENCODING = 'unicode'[0m
+  [1m[35m (233.9ms)[0m  [1m[35mCREATE DATABASE "jarvis_development" ENCODING = 'unicode'[0m
+  [1m[35m (170.6ms)[0m  [1m[35mCREATE DATABASE "jarvis_test" ENCODING = 'unicode'[0m
+  [1m[35m (5.5ms)[0m  [1m[35mCREATE TABLE "schema_migrations" ("version" character varying NOT NULL PRIMARY KEY)[0m
+  [1m[35m (1.6ms)[0m  [1m[35mCREATE TABLE "ar_internal_metadata" ("key" character varying NOT NULL PRIMARY KEY, "value" character varying, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[35m (0.2ms)[0m  [1m[34mSELECT pg_try_advisory_lock(7527352867017338775)[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.2ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.3ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "environment"]]
+  [1m[36mActiveRecord::InternalMetadata Create (1.4ms)[0m  [1m[32mINSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES ('environment', 'development', '2026-06-17 16:35:21.842432', '2026-06-17 16:35:21.842434') RETURNING "key"[0m
+Migrating to CreateUsers (20260617162323)
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (1.5ms)[0m  [1m[35mCREATE TABLE "users" ("id" bigserial primary key, "email" character varying NOT NULL, "name" character varying NOT NULL, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[35m (0.2ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_users_on_email" ON "users" ("email")[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.1ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20260617162323') RETURNING "version"[0m
+  [1m[36mTRANSACTION (1.2ms)[0m  [1m[35mCOMMIT[0m
+  [1m[35m (0.1ms)[0m  [1m[34mSELECT pg_advisory_unlock(7527352867017338775)[0m
+  [1m[35m (0.0ms)[0m  [1m[34mSELECT pg_try_advisory_lock(7527352867017338775)[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.1ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.1ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "environment"]]
+Migrating to CreateCommands (20260617162331)
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (1.3ms)[0m  [1m[35mCREATE TABLE "commands" ("id" bigserial primary key, "user_id" bigint NOT NULL, "raw_text" text NOT NULL, "intent" character varying, "status" character varying DEFAULT 'pending' NOT NULL, "response" jsonb DEFAULT '{}' NOT NULL, "error_message" text, "started_at" timestamp(6), "completed_at" timestamp(6), "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL, CONSTRAINT "fk_rails_370b310a97"
+FOREIGN KEY ("user_id")
+  REFERENCES "users" ("id")
+)[0m
+  [1m[35m (0.2ms)[0m  [1m[35mCREATE INDEX "index_commands_on_user_id" ON "commands" ("user_id")[0m
+  [1m[35m (0.2ms)[0m  [1m[35mCREATE INDEX "index_commands_on_user_id_and_status" ON "commands" ("user_id", "status")[0m
+  [1m[35m (0.2ms)[0m  [1m[35mCREATE INDEX "index_commands_on_intent" ON "commands" ("intent")[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.1ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20260617162331') RETURNING "version"[0m
+  [1m[36mTRANSACTION (98.4ms)[0m  [1m[35mCOMMIT[0m
+  [1m[35m (0.6ms)[0m  [1m[34mSELECT pg_advisory_unlock(7527352867017338775)[0m
+  [1m[35m (0.3ms)[0m  [1m[34mSELECT pg_try_advisory_lock(7527352867017338775)[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.3ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.3ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "environment"]]
+Migrating to CreateIntegrationAccounts (20260617162332)
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (2.2ms)[0m  [1m[35mCREATE TABLE "integration_accounts" ("id" bigserial primary key, "user_id" bigint NOT NULL, "provider" character varying NOT NULL, "access_token" text, "refresh_token" text, "expires_at" timestamp(6), "metadata" jsonb DEFAULT '{}' NOT NULL, "status" character varying DEFAULT 'mock' NOT NULL, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL, CONSTRAINT "fk_rails_3da00c9f22"
+FOREIGN KEY ("user_id")
+  REFERENCES "users" ("id")
+)[0m
+  [1m[35m (1.0ms)[0m  [1m[35mCREATE INDEX "index_integration_accounts_on_user_id" ON "integration_accounts" ("user_id")[0m
+  [1m[35m (0.5ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_integration_accounts_on_user_id_and_provider" ON "integration_accounts" ("user_id", "provider")[0m
+  [1m[35m (0.3ms)[0m  [1m[35mALTER TABLE "integration_accounts" ADD CONSTRAINT integration_accounts_provider_check CHECK (provider IN ('gmail', 'jira', 'github', 'google_calendar'))[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.1ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20260617162332') RETURNING "version"[0m
+  [1m[36mTRANSACTION (2.6ms)[0m  [1m[35mCOMMIT[0m
+  [1m[35m (0.3ms)[0m  [1m[34mSELECT pg_advisory_unlock(7527352867017338775)[0m
+  [1m[35m (0.1ms)[0m  [1m[34mSELECT pg_try_advisory_lock(7527352867017338775)[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.1ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.2ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "environment"]]
+Migrating to CreateContextItems (20260617162333)
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (0.9ms)[0m  [1m[35mCREATE TABLE "context_items" ("id" bigserial primary key, "command_id" bigint NOT NULL, "source" character varying NOT NULL, "external_id" character varying, "title" character varying NOT NULL, "body" text, "metadata" jsonb DEFAULT '{}' NOT NULL, "occurred_at" timestamp(6), "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL, CONSTRAINT "fk_rails_ad1faeeddd"
+FOREIGN KEY ("command_id")
+  REFERENCES "commands" ("id")
+)[0m
+  [1m[35m (0.2ms)[0m  [1m[35mCREATE INDEX "index_context_items_on_command_id" ON "context_items" ("command_id")[0m
+  [1m[35m (0.3ms)[0m  [1m[35mCREATE INDEX "index_context_items_on_command_id_and_source" ON "context_items" ("command_id", "source")[0m
+  [1m[35m (0.2ms)[0m  [1m[35mCREATE INDEX "index_context_items_on_occurred_at" ON "context_items" ("occurred_at")[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.2ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20260617162333') RETURNING "version"[0m
+  [1m[36mTRANSACTION (1.1ms)[0m  [1m[35mCOMMIT[0m
+  [1m[35m (0.1ms)[0m  [1m[34mSELECT pg_advisory_unlock(7527352867017338775)[0m
+  [1m[35m (0.0ms)[0m  [1m[34mSELECT pg_try_advisory_lock(7527352867017338775)[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.1ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.2ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "environment"]]
+Migrating to CreateAiSummaries (20260617162334)
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (1.4ms)[0m  [1m[35mCREATE TABLE "ai_summaries" ("id" bigserial primary key, "command_id" bigint NOT NULL, "summary" text, "action_items" jsonb DEFAULT '[]' NOT NULL, "suggested_response" text, "confidence_score" decimal(5,2) DEFAULT 0.0 NOT NULL, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL, CONSTRAINT "fk_rails_3edf682975"
+FOREIGN KEY ("command_id")
+  REFERENCES "commands" ("id")
+)[0m
+  [1m[35m (0.2ms)[0m  [1m[35mCREATE INDEX "index_ai_summaries_on_command_id" ON "ai_summaries" ("command_id")[0m
+  [1m[35m (0.4ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_ai_summaries_on_command_id" ON "ai_summaries" ("command_id")[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[35m (0.1ms)[0m  [1m[34mSELECT pg_advisory_unlock(7527352867017338775)[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.5ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[35m (0.1ms)[0m  [1m[34mSELECT pg_try_advisory_lock(7527352867017338775)[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.1ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.3ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "environment"]]
+Migrating to CreateAiSummaries (20260617162334)
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (1.4ms)[0m  [1m[35mCREATE TABLE "ai_summaries" ("id" bigserial primary key, "command_id" bigint NOT NULL, "summary" text, "action_items" jsonb DEFAULT '[]' NOT NULL, "suggested_response" text, "confidence_score" decimal(5,2) DEFAULT 0.0 NOT NULL, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL, CONSTRAINT "fk_rails_3edf682975"
+FOREIGN KEY ("command_id")
+  REFERENCES "commands" ("id")
+)[0m
+  [1m[35m (0.3ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_ai_summaries_on_command_id" ON "ai_summaries" ("command_id")[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.2ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20260617162334') RETURNING "version"[0m
+  [1m[36mTRANSACTION (1.3ms)[0m  [1m[35mCOMMIT[0m
+  [1m[35m (0.1ms)[0m  [1m[34mSELECT pg_advisory_unlock(7527352867017338775)[0m
+  [1m[35m (84.7ms)[0m  [1m[35mCREATE TABLE "schema_migrations" ("version" character varying NOT NULL PRIMARY KEY)[0m
+  [1m[35m (2.8ms)[0m  [1m[35mCREATE TABLE "ar_internal_metadata" ("key" character varying NOT NULL PRIMARY KEY, "value" character varying, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[35m (0.4ms)[0m  [1m[34mSELECT pg_try_advisory_lock(4524425917504909605)[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.5ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.6ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "environment"]]
+  [1m[36mActiveRecord::InternalMetadata Create (1.2ms)[0m  [1m[32mINSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES ('environment', 'test', '2026-06-17 16:35:37.582139', '2026-06-17 16:35:37.582141') RETURNING "key"[0m
+Migrating to CreateUsers (20260617162323)
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (1.9ms)[0m  [1m[35mCREATE TABLE "users" ("id" bigserial primary key, "email" character varying NOT NULL, "name" character varying NOT NULL, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[35m (0.2ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_users_on_email" ON "users" ("email")[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.2ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20260617162323') RETURNING "version"[0m
+  [1m[36mTRANSACTION (1.1ms)[0m  [1m[35mCOMMIT[0m
+  [1m[35m (0.1ms)[0m  [1m[34mSELECT pg_advisory_unlock(4524425917504909605)[0m
+  [1m[35m (0.1ms)[0m  [1m[34mSELECT pg_try_advisory_lock(4524425917504909605)[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.2ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.6ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "environment"]]
+Migrating to CreateCommands (20260617162331)
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (2.4ms)[0m  [1m[35mCREATE TABLE "commands" ("id" bigserial primary key, "user_id" bigint NOT NULL, "raw_text" text NOT NULL, "intent" character varying, "status" character varying DEFAULT 'pending' NOT NULL, "response" jsonb DEFAULT '{}' NOT NULL, "error_message" text, "started_at" timestamp(6), "completed_at" timestamp(6), "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL, CONSTRAINT "fk_rails_370b310a97"
+FOREIGN KEY ("user_id")
+  REFERENCES "users" ("id")
+)[0m
+  [1m[35m (0.8ms)[0m  [1m[35mCREATE INDEX "index_commands_on_user_id" ON "commands" ("user_id")[0m
+  [1m[35m (0.7ms)[0m  [1m[35mCREATE INDEX "index_commands_on_user_id_and_status" ON "commands" ("user_id", "status")[0m
+  [1m[35m (0.5ms)[0m  [1m[35mCREATE INDEX "index_commands_on_intent" ON "commands" ("intent")[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.3ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20260617162331') RETURNING "version"[0m
+  [1m[36mTRANSACTION (78.1ms)[0m  [1m[35mCOMMIT[0m
+  [1m[35m (0.8ms)[0m  [1m[34mSELECT pg_advisory_unlock(4524425917504909605)[0m
+  [1m[35m (0.1ms)[0m  [1m[34mSELECT pg_try_advisory_lock(4524425917504909605)[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.2ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.3ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "environment"]]
+Migrating to CreateIntegrationAccounts (20260617162332)
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (2.4ms)[0m  [1m[35mCREATE TABLE "integration_accounts" ("id" bigserial primary key, "user_id" bigint NOT NULL, "provider" character varying NOT NULL, "access_token" text, "refresh_token" text, "expires_at" timestamp(6), "metadata" jsonb DEFAULT '{}' NOT NULL, "status" character varying DEFAULT 'mock' NOT NULL, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL, CONSTRAINT "fk_rails_3da00c9f22"
+FOREIGN KEY ("user_id")
+  REFERENCES "users" ("id")
+)[0m
+  [1m[35m (0.2ms)[0m  [1m[35mCREATE INDEX "index_integration_accounts_on_user_id" ON "integration_accounts" ("user_id")[0m
+  [1m[35m (0.2ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_integration_accounts_on_user_id_and_provider" ON "integration_accounts" ("user_id", "provider")[0m
+  [1m[35m (0.2ms)[0m  [1m[35mALTER TABLE "integration_accounts" ADD CONSTRAINT integration_accounts_provider_check CHECK (provider IN ('gmail', 'jira', 'github', 'google_calendar'))[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.1ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20260617162332') RETURNING "version"[0m
+  [1m[36mTRANSACTION (2.5ms)[0m  [1m[35mCOMMIT[0m
+  [1m[35m (0.1ms)[0m  [1m[34mSELECT pg_advisory_unlock(4524425917504909605)[0m
+  [1m[35m (0.1ms)[0m  [1m[34mSELECT pg_try_advisory_lock(4524425917504909605)[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.4ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.3ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "environment"]]
+Migrating to CreateContextItems (20260617162333)
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (1.3ms)[0m  [1m[35mCREATE TABLE "context_items" ("id" bigserial primary key, "command_id" bigint NOT NULL, "source" character varying NOT NULL, "external_id" character varying, "title" character varying NOT NULL, "body" text, "metadata" jsonb DEFAULT '{}' NOT NULL, "occurred_at" timestamp(6), "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL, CONSTRAINT "fk_rails_ad1faeeddd"
+FOREIGN KEY ("command_id")
+  REFERENCES "commands" ("id")
+)[0m
+  [1m[35m (0.2ms)[0m  [1m[35mCREATE INDEX "index_context_items_on_command_id" ON "context_items" ("command_id")[0m
+  [1m[35m (0.2ms)[0m  [1m[35mCREATE INDEX "index_context_items_on_command_id_and_source" ON "context_items" ("command_id", "source")[0m
+  [1m[35m (0.2ms)[0m  [1m[35mCREATE INDEX "index_context_items_on_occurred_at" ON "context_items" ("occurred_at")[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.2ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20260617162333') RETURNING "version"[0m
+  [1m[36mTRANSACTION (116.7ms)[0m  [1m[35mCOMMIT[0m
+  [1m[35m (0.6ms)[0m  [1m[34mSELECT pg_advisory_unlock(4524425917504909605)[0m
+  [1m[35m (0.1ms)[0m  [1m[34mSELECT pg_try_advisory_lock(4524425917504909605)[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.3ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.3ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "environment"]]
+Migrating to CreateAiSummaries (20260617162334)
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (1.4ms)[0m  [1m[35mCREATE TABLE "ai_summaries" ("id" bigserial primary key, "command_id" bigint NOT NULL, "summary" text, "action_items" jsonb DEFAULT '[]' NOT NULL, "suggested_response" text, "confidence_score" decimal(5,2) DEFAULT 0.0 NOT NULL, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL, CONSTRAINT "fk_rails_3edf682975"
+FOREIGN KEY ("command_id")
+  REFERENCES "commands" ("id")
+)[0m
+  [1m[35m (0.2ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_ai_summaries_on_command_id" ON "ai_summaries" ("command_id")[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.1ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20260617162334') RETURNING "version"[0m
+  [1m[36mTRANSACTION (105.6ms)[0m  [1m[35mCOMMIT[0m
+  [1m[35m (0.7ms)[0m  [1m[34mSELECT pg_advisory_unlock(4524425917504909605)[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.2ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.2ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mUser Load (0.1ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."email" = $1 LIMIT $2[0m  [["email", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mUser Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE "users"."email" = $1 LIMIT $2[0m  [["email", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mUser Create (0.3ms)[0m  [1m[32mINSERT INTO "users" ("email", "name", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["email", "[FILTERED]"], ["name", "Demo User"], ["created_at", "2026-06-17 16:35:38.290027"], ["updated_at", "2026-06-17 16:35:38.290027"]]
+  [1m[36mTRANSACTION (2.5ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mIntegrationAccount Load (0.5ms)[0m  [1m[34mSELECT "integration_accounts".* FROM "integration_accounts" WHERE "integration_accounts"."user_id" = $1 AND "integration_accounts"."provider" = $2 LIMIT $3[0m  [["user_id", 1], ["provider", "gmail"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mIntegrationAccount Exists? (1.0ms)[0m  [1m[34mSELECT 1 AS one FROM "integration_accounts" WHERE "integration_accounts"."provider" = $1 AND "integration_accounts"."user_id" = $2 LIMIT $3[0m  [["provider", "gmail"], ["user_id", 1], ["LIMIT", 1]]
+  [1m[36mIntegrationAccount Create (0.7ms)[0m  [1m[32mINSERT INTO "integration_accounts" ("user_id", "provider", "access_token", "refresh_token", "expires_at", "metadata", "status", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING "id"[0m  [["user_id", 1], ["provider", "gmail"], ["access_token", "[FILTERED]"], ["refresh_token", "[FILTERED]"], ["expires_at", nil], ["metadata", "{\"mode\":\"mock\",\"phase\":\"phase_1\"}"], ["status", "mock"], ["created_at", "2026-06-17 16:35:38.309908"], ["updated_at", "2026-06-17 16:35:38.309908"]]
+  [1m[36mTRANSACTION (95.9ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mIntegrationAccount Load (0.6ms)[0m  [1m[34mSELECT "integration_accounts".* FROM "integration_accounts" WHERE "integration_accounts"."user_id" = $1 AND "integration_accounts"."provider" = $2 LIMIT $3[0m  [["user_id", 1], ["provider", "jira"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.4ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mIntegrationAccount Exists? (1.4ms)[0m  [1m[34mSELECT 1 AS one FROM "integration_accounts" WHERE "integration_accounts"."provider" = $1 AND "integration_accounts"."user_id" = $2 LIMIT $3[0m  [["provider", "jira"], ["user_id", 1], ["LIMIT", 1]]
+  [1m[36mIntegrationAccount Create (0.6ms)[0m  [1m[32mINSERT INTO "integration_accounts" ("user_id", "provider", "access_token", "refresh_token", "expires_at", "metadata", "status", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING "id"[0m  [["user_id", 1], ["provider", "jira"], ["access_token", "[FILTERED]"], ["refresh_token", "[FILTERED]"], ["expires_at", nil], ["metadata", "{\"mode\":\"mock\",\"phase\":\"phase_1\"}"], ["status", "mock"], ["created_at", "2026-06-17 16:35:38.420890"], ["updated_at", "2026-06-17 16:35:38.420890"]]
+  [1m[36mTRANSACTION (1.3ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mIntegrationAccount Load (0.3ms)[0m  [1m[34mSELECT "integration_accounts".* FROM "integration_accounts" WHERE "integration_accounts"."user_id" = $1 AND "integration_accounts"."provider" = $2 LIMIT $3[0m  [["user_id", 1], ["provider", "github"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mIntegrationAccount Exists? (0.9ms)[0m  [1m[34mSELECT 1 AS one FROM "integration_accounts" WHERE "integration_accounts"."provider" = $1 AND "integration_accounts"."user_id" = $2 LIMIT $3[0m  [["provider", "github"], ["user_id", 1], ["LIMIT", 1]]
+  [1m[36mIntegrationAccount Create (0.4ms)[0m  [1m[32mINSERT INTO "integration_accounts" ("user_id", "provider", "access_token", "refresh_token", "expires_at", "metadata", "status", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING "id"[0m  [["user_id", 1], ["provider", "github"], ["access_token", "[FILTERED]"], ["refresh_token", "[FILTERED]"], ["expires_at", nil], ["metadata", "{\"mode\":\"mock\",\"phase\":\"phase_1\"}"], ["status", "mock"], ["created_at", "2026-06-17 16:35:38.426680"], ["updated_at", "2026-06-17 16:35:38.426680"]]
+  [1m[36mTRANSACTION (1.6ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mIntegrationAccount Load (0.4ms)[0m  [1m[34mSELECT "integration_accounts".* FROM "integration_accounts" WHERE "integration_accounts"."user_id" = $1 AND "integration_accounts"."provider" = $2 LIMIT $3[0m  [["user_id", 1], ["provider", "google_calendar"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mIntegrationAccount Exists? (1.1ms)[0m  [1m[34mSELECT 1 AS one FROM "integration_accounts" WHERE "integration_accounts"."provider" = $1 AND "integration_accounts"."user_id" = $2 LIMIT $3[0m  [["provider", "google_calendar"], ["user_id", 1], ["LIMIT", 1]]
+  [1m[36mIntegrationAccount Create (0.4ms)[0m  [1m[32mINSERT INTO "integration_accounts" ("user_id", "provider", "access_token", "refresh_token", "expires_at", "metadata", "status", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING "id"[0m  [["user_id", 1], ["provider", "google_calendar"], ["access_token", "[FILTERED]"], ["refresh_token", "[FILTERED]"], ["expires_at", nil], ["metadata", "{\"mode\":\"mock\",\"phase\":\"phase_1\"}"], ["status", "mock"], ["created_at", "2026-06-17 16:35:38.432526"], ["updated_at", "2026-06-17 16:35:38.432526"]]
+  [1m[36mTRANSACTION (1.4ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mCommand Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "commands" WHERE "commands"."user_id" = $1 AND "commands"."raw_text" = $2 LIMIT $3[0m  [["user_id", 1], ["raw_text", "Any update from Anthony?"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.4ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mCommand Create (1.6ms)[0m  [1m[32mINSERT INTO "commands" ("user_id", "raw_text", "intent", "status", "response", "error_message", "started_at", "completed_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING "id"[0m  [["user_id", 1], ["raw_text", "Any update from Anthony?"], ["intent", nil], ["status", "pending"], ["response", "{}"], ["error_message", nil], ["started_at", nil], ["completed_at", nil], ["created_at", "2026-06-17 16:35:38.446119"], ["updated_at", "2026-06-17 16:35:38.446119"]]
+  [1m[36mTRANSACTION (1.3ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  ↳ app/services/command_processor.rb:11:in `process'
+  [1m[36mCommand Update (0.8ms)[0m  [1m[33mUPDATE "commands" SET "intent" = $1, "status" = $2, "started_at" = $3, "updated_at" = $4 WHERE "commands"."id" = $5[0m  [["intent", "person_update"], ["status", "processing"], ["started_at", "2026-06-17 16:35:38.451862"], ["updated_at", "2026-06-17 16:35:38.452091"], ["id", 1]]
+  ↳ app/services/command_processor.rb:11:in `process'
+  [1m[36mTRANSACTION (1.1ms)[0m  [1m[35mCOMMIT[0m
+  ↳ app/services/command_processor.rb:11:in `process'
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  ↳ app/services/context_collector.rb:74:in `persist_context_item'
+  [1m[36mContextItem Create (0.8ms)[0m  [1m[32mINSERT INTO "context_items" ("command_id", "source", "external_id", "title", "body", "metadata", "occurred_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING "id"[0m  [["command_id", 1], ["source", "gmail"], ["external_id", "gmail-anthony-invoice"], ["title", "Re: Pending invoice and timesheet"], ["body", "Anthony replied about the pending invoice and requested the updated timesheet."], ["metadata", "{\"from\":\"Anthony \\u003canthony@example.com\\u003e\",\"important\":true,\"action_items\":[\"Share updated timesheet\",\"Confirm invoice amount\"]}"], ["occurred_at", "2026-06-17 14:35:38.455106"], ["created_at", "2026-06-17 16:35:38.459995"], ["updated_at", "2026-06-17 16:35:38.459995"]]
+  ↳ app/services/context_collector.rb:74:in `persist_context_item'
+  [1m[36mTRANSACTION (1.1ms)[0m  [1m[35mCOMMIT[0m
+  ↳ app/services/context_collector.rb:74:in `persist_context_item'
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  ↳ app/services/context_collector.rb:74:in `persist_context_item'
+  [1m[36mContextItem Create (0.6ms)[0m  [1m[32mINSERT INTO "context_items" ("command_id", "source", "external_id", "title", "body", "metadata", "occurred_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING "id"[0m  [["command_id", 1], ["source", "jira"], ["external_id", "JAR-128"], ["title", "Invoice reconciliation follow-up"], ["body", "Anthony was mentioned on JAR-128 asking for updated billing notes."], ["metadata", "{\"priority\":\"high\",\"assignee\":\"Anthony\"}"], ["occurred_at", "2026-06-17 12:35:38.455130"], ["created_at", "2026-06-17 16:35:38.462999"], ["updated_at", "2026-06-17 16:35:38.462999"]]
+  ↳ app/services/context_collector.rb:74:in `persist_context_item'
+  [1m[36mTRANSACTION (1.0ms)[0m  [1m[35mCOMMIT[0m
+  ↳ app/services/context_collector.rb:74:in `persist_context_item'
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  ↳ app/services/context_collector.rb:74:in `persist_context_item'
+  [1m[36mContextItem Create (0.8ms)[0m  [1m[32mINSERT INTO "context_items" ("command_id", "source", "external_id", "title", "body", "metadata", "occurred_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING "id"[0m  [["command_id", 1], ["source", "github"], ["external_id", "pr-42-comment"], ["title", "PR #42 requested review"], ["body", "Anthony mentioned you on the API contract pull request."], ["metadata", "{\"repository\":\"jarvis/api\",\"type\":\"mention\"}"], ["occurred_at", "2026-06-17 11:35:38.455134"], ["created_at", "2026-06-17 16:35:38.465414"], ["updated_at", "2026-06-17 16:35:38.465414"]]
+  ↳ app/services/context_collector.rb:74:in `persist_context_item'
+  [1m[36mTRANSACTION (1.0ms)[0m  [1m[35mCOMMIT[0m
+  ↳ app/services/context_collector.rb:74:in `persist_context_item'
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  ↳ app/services/ai_summary_service.rb:11:in `summarize'
+  [1m[36mAiSummary Create (0.7ms)[0m  [1m[32mINSERT INTO "ai_summaries" ("command_id", "summary", "action_items", "suggested_response", "confidence_score", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["command_id", 1], ["summary", "Anthony has recent activity: Anthony replied about the pending invoice and requested the updated timesheet.."], ["action_items", "[\"Share updated timesheet\",\"Confirm invoice amount\"]"], ["suggested_response", "Hi Anthony, thanks for the update. I will share the revised timesheet and confirm the invoice amount shortly."], ["confidence_score", "0.82"], ["created_at", "2026-06-17 16:35:38.472550"], ["updated_at", "2026-06-17 16:35:38.472550"]]
+  ↳ app/services/ai_summary_service.rb:11:in `summarize'
+  [1m[36mTRANSACTION (1.0ms)[0m  [1m[35mCOMMIT[0m
+  ↳ app/services/ai_summary_service.rb:11:in `summarize'
+  [1m[36mAiSummary Load (0.1ms)[0m  [1m[34mSELECT "ai_summaries".* FROM "ai_summaries" WHERE "ai_summaries"."command_id" = $1 LIMIT $2[0m  [["command_id", 1], ["LIMIT", 1]]
+  ↳ app/services/ai_summary_service.rb:11:in `summarize'
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  ↳ app/services/command_processor.rb:22:in `process'
+  [1m[36mCommand Update (0.5ms)[0m  [1m[33mUPDATE "commands" SET "status" = $1, "response" = $2, "completed_at" = $3, "updated_at" = $4 WHERE "commands"."id" = $5[0m  [["status", "completed"], ["response", "{\"intent\":\"person_update\",\"summary\":\"Anthony has recent activity: Anthony replied about the pending invoice and requested the updated timesheet..\",\"action_items\":[\"Share updated timesheet\",\"Confirm invoice amount\"],\"suggested_response\":\"Hi Anthony, thanks for the update. I will share the revised timesheet and confirm the invoice amount shortly.\",\"confidence_score\":0.82}"], ["completed_at", "2026-06-17 16:35:38.476077"], ["updated_at", "2026-06-17 16:35:38.476212"], ["id", 1]]
+  ↳ app/services/command_processor.rb:22:in `process'
+  [1m[36mTRANSACTION (0.9ms)[0m  [1m[35mCOMMIT[0m
+  ↳ app/services/command_processor.rb:22:in `process'
+Started GET "/" for ::1 at 2026-06-17 22:06:12 +0530
+  [1m[36mActiveRecord::SchemaMigration Load (0.2ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+Processing by Rails::WelcomeController#index as HTML
+  Rendering /home/lareb/.rvm/gems/ruby-3.2.0/gems/railties-7.2.3.1/lib/rails/templates/rails/welcome/index.html.erb
+  Rendered /home/lareb/.rvm/gems/ruby-3.2.0/gems/railties-7.2.3.1/lib/rails/templates/rails/welcome/index.html.erb (Duration: 0.4ms | GC: 0.0ms)
+Completed 200 OK in 5ms (Views: 2.4ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/icon.png" for ::1 at 2026-06-17 22:06:13 +0530
+  
+ActionController::RoutingError (No route matches [GET] "/icon.png"):
+  
+Started GET "/api/v1/daily_briefing" for ::1 at 2026-06-17 22:30:09 +0530
+Processing by Api::V1::DailyBriefingsController#show as */*
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/daily_briefing" for ::1 at 2026-06-17 22:52:45 +0530
+  [1m[36mActiveRecord::SchemaMigration Load (0.4ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+Processing by Api::V1::DailyBriefingsController#show as */*
+  Parameters: {"daily_briefing"=>{}}
+Completed 200 OK in 3ms (Views: 0.2ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started POST "/api/v1/commands" for ::1 at 2026-06-17 22:53:08 +0530
+Processing by Api::V1::CommandsController#create as */*
+  Parameters: {"command"=>"Any update from Anthony?"}
+  [1m[36mUser Load (0.1ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."email" = $1 LIMIT $2[0m  [["email", "[FILTERED]"], ["LIMIT", 1]]
+  ↳ app/controllers/api/v1/base_controller.rb:7:in `current_user'
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  ↳ app/controllers/api/v1/commands_controller.rb:5:in `create'
+  [1m[36mCommand Create (0.9ms)[0m  [1m[32mINSERT INTO "commands" ("user_id", "raw_text", "intent", "status", "response", "error_message", "started_at", "completed_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING "id"[0m  [["user_id", 1], ["raw_text", "Any update from Anthony?"], ["intent", nil], ["status", "pending"], ["response", "{}"], ["error_message", nil], ["started_at", nil], ["completed_at", nil], ["created_at", "2026-06-17 17:23:08.475859"], ["updated_at", "2026-06-17 17:23:08.475859"]]
+  ↳ app/controllers/api/v1/commands_controller.rb:5:in `create'
+  [1m[36mTRANSACTION (2.6ms)[0m  [1m[35mCOMMIT[0m
+  ↳ app/controllers/api/v1/commands_controller.rb:5:in `create'
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  ↳ app/services/command_processor.rb:11:in `process'
+  [1m[36mCommand Update (0.6ms)[0m  [1m[33mUPDATE "commands" SET "intent" = $1, "status" = $2, "started_at" = $3, "updated_at" = $4 WHERE "commands"."id" = $5[0m  [["intent", "person_update"], ["status", "processing"], ["started_at", "2026-06-17 17:23:08.480788"], ["updated_at", "2026-06-17 17:23:08.480927"], ["id", 2]]
+  ↳ app/services/command_processor.rb:11:in `process'
+  [1m[36mTRANSACTION (1.0ms)[0m  [1m[35mCOMMIT[0m
+  ↳ app/services/command_processor.rb:11:in `process'
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mBEGIN[0m
+  ↳ app/services/context_collector.rb:74:in `persist_context_item'
+  [1m[36mContextItem Create (1.3ms)[0m  [1m[32mINSERT INTO "context_items" ("command_id", "source", "external_id", "title", "body", "metadata", "occurred_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING "id"[0m  [["command_id", 2], ["source", "gmail"], ["external_id", "gmail-anthony-invoice"], ["title", "Re: Pending invoice and timesheet"], ["body", "Anthony replied about the pending invoice and requested the updated timesheet."], ["metadata", "{\"from\":\"Anthony \\u003canthony@example.com\\u003e\",\"important\":true,\"action_items\":[\"Share updated timesheet\",\"Confirm invoice amount\"]}"], ["occurred_at", "2026-06-17 15:23:08.483497"], ["created_at", "2026-06-17 17:23:08.497042"], ["updated_at", "2026-06-17 17:23:08.497042"]]
+  ↳ app/services/context_collector.rb:74:in `persist_context_item'
+  [1m[36mTRANSACTION (1.0ms)[0m  [1m[35mCOMMIT[0m
+  ↳ app/services/context_collector.rb:74:in `persist_context_item'
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  ↳ app/services/context_collector.rb:74:in `persist_context_item'
+  [1m[36mContextItem Create (0.9ms)[0m  [1m[32mINSERT INTO "context_items" ("command_id", "source", "external_id", "title", "body", "metadata", "occurred_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING "id"[0m  [["command_id", 2], ["source", "jira"], ["external_id", "JAR-128"], ["title", "Invoice reconciliation follow-up"], ["body", "Anthony was mentioned on JAR-128 asking for updated billing notes."], ["metadata", "{\"priority\":\"high\",\"assignee\":\"Anthony\"}"], ["occurred_at", "2026-06-17 13:23:08.483512"], ["created_at", "2026-06-17 17:23:08.500840"], ["updated_at", "2026-06-17 17:23:08.500840"]]
+  ↳ app/services/context_collector.rb:74:in `persist_context_item'
+  [1m[36mTRANSACTION (1.2ms)[0m  [1m[35mCOMMIT[0m
+  ↳ app/services/context_collector.rb:74:in `persist_context_item'
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mBEGIN[0m
+  ↳ app/services/context_collector.rb:74:in `persist_context_item'
+  [1m[36mContextItem Create (1.0ms)[0m  [1m[32mINSERT INTO "context_items" ("command_id", "source", "external_id", "title", "body", "metadata", "occurred_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING "id"[0m  [["command_id", 2], ["source", "github"], ["external_id", "pr-42-comment"], ["title", "PR #42 requested review"], ["body", "Anthony mentioned you on the API contract pull request."], ["metadata", "{\"repository\":\"jarvis/api\",\"type\":\"mention\"}"], ["occurred_at", "2026-06-17 12:23:08.483517"], ["created_at", "2026-06-17 17:23:08.504131"], ["updated_at", "2026-06-17 17:23:08.504131"]]
+  ↳ app/services/context_collector.rb:74:in `persist_context_item'
+  [1m[36mTRANSACTION (1.2ms)[0m  [1m[35mCOMMIT[0m
+  ↳ app/services/context_collector.rb:74:in `persist_context_item'
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  ↳ app/services/ai_summary_service.rb:11:in `summarize'
+  [1m[36mAiSummary Create (0.9ms)[0m  [1m[32mINSERT INTO "ai_summaries" ("command_id", "summary", "action_items", "suggested_response", "confidence_score", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["command_id", 2], ["summary", "Anthony has recent activity: Anthony replied about the pending invoice and requested the updated timesheet.."], ["action_items", "[\"Share updated timesheet\",\"Confirm invoice amount\"]"], ["suggested_response", "Hi Anthony, thanks for the update. I will share the revised timesheet and confirm the invoice amount shortly."], ["confidence_score", "0.82"], ["created_at", "2026-06-17 17:23:08.512406"], ["updated_at", "2026-06-17 17:23:08.512406"]]
+  ↳ app/services/ai_summary_service.rb:11:in `summarize'
+  [1m[36mTRANSACTION (1.1ms)[0m  [1m[35mCOMMIT[0m
+  ↳ app/services/ai_summary_service.rb:11:in `summarize'
+  [1m[36mAiSummary Load (0.2ms)[0m  [1m[34mSELECT "ai_summaries".* FROM "ai_summaries" WHERE "ai_summaries"."command_id" = $1 LIMIT $2[0m  [["command_id", 2], ["LIMIT", 1]]
+  ↳ app/services/ai_summary_service.rb:11:in `summarize'
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  ↳ app/services/command_processor.rb:22:in `process'
+  [1m[36mCommand Update (1.2ms)[0m  [1m[33mUPDATE "commands" SET "status" = $1, "response" = $2, "completed_at" = $3, "updated_at" = $4 WHERE "commands"."id" = $5[0m  [["status", "completed"], ["response", "{\"intent\":\"person_update\",\"summary\":\"Anthony has recent activity: Anthony replied about the pending invoice and requested the updated timesheet..\",\"action_items\":[\"Share updated timesheet\",\"Confirm invoice amount\"],\"suggested_response\":\"Hi Anthony, thanks for the update. I will share the revised timesheet and confirm the invoice amount shortly.\",\"confidence_score\":0.82}"], ["completed_at", "2026-06-17 17:23:08.517704"], ["updated_at", "2026-06-17 17:23:08.517982"], ["id", 2]]
+  ↳ app/services/command_processor.rb:22:in `process'
+  [1m[36mTRANSACTION (1.1ms)[0m  [1m[35mCOMMIT[0m
+  ↳ app/services/command_processor.rb:22:in `process'
+Completed 201 Created in 75ms (Views: 0.1ms | ActiveRecord: 24.9ms (9 queries, 0 cached) | GC: 10.2ms)
+
+
+Started GET "/api/v1/commands/2" for ::1 at 2026-06-17 22:53:08 +0530
+Processing by Api::V1::CommandsController#show as */*
+  Parameters: {"id"=>"2", "command"=>{}}
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."email" = $1 LIMIT $2[0m  [["email", "[FILTERED]"], ["LIMIT", 1]]
+  ↳ app/controllers/api/v1/base_controller.rb:7:in `current_user'
+  [1m[36mCommand Load (0.1ms)[0m  [1m[34mSELECT "commands".* FROM "commands" WHERE "commands"."user_id" = $1 AND "commands"."id" = $2 LIMIT $3[0m  [["user_id", 1], ["id", 2], ["LIMIT", 1]]
+  ↳ app/controllers/api/v1/commands_controller.rb:14:in `show'
+  [1m[36mContextItem Load (0.1ms)[0m  [1m[34mSELECT "context_items".* FROM "context_items" WHERE "context_items"."command_id" = $1[0m  [["command_id", 2]]
+  ↳ app/controllers/api/v1/commands_controller.rb:14:in `show'
+  [1m[36mAiSummary Load (0.1ms)[0m  [1m[34mSELECT "ai_summaries".* FROM "ai_summaries" WHERE "ai_summaries"."command_id" = $1[0m  [["command_id", 2]]
+  ↳ app/controllers/api/v1/commands_controller.rb:14:in `show'
+  [1m[36mContextItem Load (0.1ms)[0m  [1m[34mSELECT "context_items".* FROM "context_items" WHERE "context_items"."command_id" = $1 ORDER BY "context_items"."occurred_at" DESC[0m  [["command_id", 2]]
+  ↳ app/controllers/api/v1/commands_controller.rb:22:in `map'
+Completed 200 OK in 7ms (Views: 0.2ms | ActiveRecord: 0.7ms (5 queries, 0 cached) | GC: 0.4ms)
+
+
+Started POST "/api/v1/commands" for ::1 at 2026-06-17 22:54:39 +0530
+Processing by Api::V1::CommandsController#create as */*
+  Parameters: {"command"=>"Summarize today's important emails."}
+  [1m[36mUser Load (0.4ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."email" = $1 LIMIT $2[0m  [["email", "[FILTERED]"], ["LIMIT", 1]]
+  ↳ app/controllers/api/v1/base_controller.rb:7:in `current_user'
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  ↳ app/controllers/api/v1/commands_controller.rb:5:in `create'
+  [1m[36mCommand Create (1.4ms)[0m  [1m[32mINSERT INTO "commands" ("user_id", "raw_text", "intent", "status", "response", "error_message", "started_at", "completed_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING "id"[0m  [["user_id", 1], ["raw_text", "Summarize today's important emails."], ["intent", nil], ["status", "pending"], ["response", "{}"], ["error_message", nil], ["started_at", nil], ["completed_at", nil], ["created_at", "2026-06-17 17:24:39.781536"], ["updated_at", "2026-06-17 17:24:39.781536"]]
+  ↳ app/controllers/api/v1/commands_controller.rb:5:in `create'
+  [1m[36mTRANSACTION (4.8ms)[0m  [1m[35mCOMMIT[0m
+  ↳ app/controllers/api/v1/commands_controller.rb:5:in `create'
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  ↳ app/services/command_processor.rb:11:in `process'
+  [1m[36mCommand Update (0.8ms)[0m  [1m[33mUPDATE "commands" SET "intent" = $1, "status" = $2, "started_at" = $3, "updated_at" = $4 WHERE "commands"."id" = $5[0m  [["intent", "important_emails"], ["status", "processing"], ["started_at", "2026-06-17 17:24:39.789333"], ["updated_at", "2026-06-17 17:24:39.789549"], ["id", 3]]
+  ↳ app/services/command_processor.rb:11:in `process'
+  [1m[36mTRANSACTION (1.0ms)[0m  [1m[35mCOMMIT[0m
+  ↳ app/services/command_processor.rb:11:in `process'
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  ↳ app/services/context_collector.rb:74:in `persist_context_item'
+  [1m[36mContextItem Create (0.9ms)[0m  [1m[32mINSERT INTO "context_items" ("command_id", "source", "external_id", "title", "body", "metadata", "occurred_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING "id"[0m  [["command_id", 3], ["source", "gmail"], ["external_id", "gmail-client-payment"], ["title", "Client payment clarification"], ["body", "Client asked for invoice amount confirmation before approving payment."], ["metadata", "{\"important\":true,\"category\":\"invoice\",\"action_items\":[\"Confirm invoice amount\"]}"], ["occurred_at", "2026-06-17 16:24:39.792227"], ["created_at", "2026-06-17 17:24:39.792694"], ["updated_at", "2026-06-17 17:24:39.792694"]]
+  ↳ app/services/context_collector.rb:74:in `persist_context_item'
+  [1m[36mTRANSACTION (1.0ms)[0m  [1m[35mCOMMIT[0m
+  ↳ app/services/context_collector.rb:74:in `persist_context_item'
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  ↳ app/services/context_collector.rb:74:in `persist_context_item'
+  [1m[36mContextItem Create (1.5ms)[0m  [1m[32mINSERT INTO "context_items" ("command_id", "source", "external_id", "title", "body", "metadata", "occurred_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING "id"[0m  [["command_id", 3], ["source", "gmail"], ["external_id", "gmail-project-blocker"], ["title", "Project API blocker"], ["body", "Frontend team is blocked on the new auth API contract."], ["metadata", "{\"important\":true,\"category\":\"blocker\",\"action_items\":[\"Reply with auth API contract status\"]}"], ["occurred_at", "2026-06-17 14:24:39.792238"], ["created_at", "2026-06-17 17:24:39.795817"], ["updated_at", "2026-06-17 17:24:39.795817"]]
+  ↳ app/services/context_collector.rb:74:in `persist_context_item'
+  [1m[36mTRANSACTION (1.0ms)[0m  [1m[35mCOMMIT[0m
+  ↳ app/services/context_collector.rb:74:in `persist_context_item'
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  ↳ app/services/ai_summary_service.rb:11:in `summarize'
+  [1m[36mAiSummary Create (1.7ms)[0m  [1m[32mINSERT INTO "ai_summaries" ("command_id", "summary", "action_items", "suggested_response", "confidence_score", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["command_id", 3], ["summary", "2 important emails need attention today: Client payment clarification; Project API blocker."], ["action_items", "[\"Confirm invoice amount\",\"Reply with auth API contract status\"]"], ["suggested_response", nil], ["confidence_score", "0.78"], ["created_at", "2026-06-17 17:24:39.801340"], ["updated_at", "2026-06-17 17:24:39.801340"]]
+  ↳ app/services/ai_summary_service.rb:11:in `summarize'
+  [1m[36mTRANSACTION (1.0ms)[0m  [1m[35mCOMMIT[0m
+  ↳ app/services/ai_summary_service.rb:11:in `summarize'
+  [1m[36mAiSummary Load (0.1ms)[0m  [1m[34mSELECT "ai_summaries".* FROM "ai_summaries" WHERE "ai_summaries"."command_id" = $1 LIMIT $2[0m  [["command_id", 3], ["LIMIT", 1]]
+  ↳ app/services/ai_summary_service.rb:11:in `summarize'
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  ↳ app/services/command_processor.rb:22:in `process'
+  [1m[36mCommand Update (0.9ms)[0m  [1m[33mUPDATE "commands" SET "status" = $1, "response" = $2, "completed_at" = $3, "updated_at" = $4 WHERE "commands"."id" = $5[0m  [["status", "completed"], ["response", "{\"intent\":\"important_emails\",\"summary\":\"2 important emails need attention today: Client payment clarification; Project API blocker.\",\"action_items\":[\"Confirm invoice amount\",\"Reply with auth API contract status\"],\"suggested_response\":null,\"confidence_score\":0.78}"], ["completed_at", "2026-06-17 17:24:39.827761"], ["updated_at", "2026-06-17 17:24:39.827925"], ["id", 3]]
+  ↳ app/services/command_processor.rb:22:in `process'
+  [1m[36mTRANSACTION (2.7ms)[0m  [1m[35mCOMMIT[0m
+  ↳ app/services/command_processor.rb:22:in `process'
+Completed 201 Created in 53ms (Views: 0.1ms | ActiveRecord: 19.7ms (8 queries, 0 cached) | GC: 25.6ms)
+
+
+Started GET "/api/v1/commands/3" for ::1 at 2026-06-17 22:54:39 +0530
+Processing by Api::V1::CommandsController#show as */*
+  Parameters: {"id"=>"3", "command"=>{}}
+  [1m[36mUser Load (0.5ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."email" = $1 LIMIT $2[0m  [["email", "[FILTERED]"], ["LIMIT", 1]]
+  ↳ app/controllers/api/v1/base_controller.rb:7:in `current_user'
+  [1m[36mCommand Load (0.3ms)[0m  [1m[34mSELECT "commands".* FROM "commands" WHERE "commands"."user_id" = $1 AND "commands"."id" = $2 LIMIT $3[0m  [["user_id", 1], ["id", 3], ["LIMIT", 1]]
+  ↳ app/controllers/api/v1/commands_controller.rb:14:in `show'
+  [1m[36mContextItem Load (0.3ms)[0m  [1m[34mSELECT "context_items".* FROM "context_items" WHERE "context_items"."command_id" = $1[0m  [["command_id", 3]]
+  ↳ app/controllers/api/v1/commands_controller.rb:14:in `show'
+  [1m[36mAiSummary Load (0.3ms)[0m  [1m[34mSELECT "ai_summaries".* FROM "ai_summaries" WHERE "ai_summaries"."command_id" = $1[0m  [["command_id", 3]]
+  ↳ app/controllers/api/v1/commands_controller.rb:14:in `show'
+  [1m[36mContextItem Load (0.3ms)[0m  [1m[34mSELECT "context_items".* FROM "context_items" WHERE "context_items"."command_id" = $1 ORDER BY "context_items"."occurred_at" DESC[0m  [["command_id", 3]]
+  ↳ app/controllers/api/v1/commands_controller.rb:22:in `map'
+Completed 200 OK in 6ms (Views: 0.2ms | ActiveRecord: 1.6ms (5 queries, 0 cached) | GC: 0.2ms)
+
+
+Started POST "/api/v1/commands" for ::1 at 2026-06-17 22:54:55 +0530
+Processing by Api::V1::CommandsController#create as */*
+  Parameters: {"command"=>"What should I focus on today?"}
+  [1m[36mUser Load (0.4ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."email" = $1 LIMIT $2[0m  [["email", "[FILTERED]"], ["LIMIT", 1]]
+  ↳ app/controllers/api/v1/base_controller.rb:7:in `current_user'
+  [1m[36mTRANSACTION (0.4ms)[0m  [1m[35mBEGIN[0m
+  ↳ app/controllers/api/v1/commands_controller.rb:5:in `create'
+  [1m[36mCommand Create (1.6ms)[0m  [1m[32mINSERT INTO "commands" ("user_id", "raw_text", "intent", "status", "response", "error_message", "started_at", "completed_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING "id"[0m  [["user_id", 1], ["raw_text", "What should I focus on today?"], ["intent", nil], ["status", "pending"], ["response", "{}"], ["error_message", nil], ["started_at", nil], ["completed_at", nil], ["created_at", "2026-06-17 17:24:55.615603"], ["updated_at", "2026-06-17 17:24:55.615603"]]
+  ↳ app/controllers/api/v1/commands_controller.rb:5:in `create'
+  [1m[36mTRANSACTION (4.7ms)[0m  [1m[35mCOMMIT[0m
+  ↳ app/controllers/api/v1/commands_controller.rb:5:in `create'
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  ↳ app/services/command_processor.rb:11:in `process'
+  [1m[36mCommand Update (0.9ms)[0m  [1m[33mUPDATE "commands" SET "intent" = $1, "status" = $2, "started_at" = $3, "updated_at" = $4 WHERE "commands"."id" = $5[0m  [["intent", "daily_focus"], ["status", "processing"], ["started_at", "2026-06-17 17:24:55.623258"], ["updated_at", "2026-06-17 17:24:55.623447"], ["id", 4]]
+  ↳ app/services/command_processor.rb:11:in `process'
+  [1m[36mTRANSACTION (1.1ms)[0m  [1m[35mCOMMIT[0m
+  ↳ app/services/command_processor.rb:11:in `process'
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  ↳ app/services/context_collector.rb:74:in `persist_context_item'
+  [1m[36mContextItem Create (0.8ms)[0m  [1m[32mINSERT INTO "context_items" ("command_id", "source", "external_id", "title", "body", "metadata", "occurred_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING "id"[0m  [["command_id", 4], ["source", "google_calendar"], ["external_id", "cal-eng-standup"], ["title", "Engineering standup"], ["body", "Daily engineering sync with project status and blockers."], ["metadata", "{\"starts_at\":\"2026-06-17T10:00:00Z\"}"], ["occurred_at", "2026-06-17 10:00:00"], ["created_at", "2026-06-17 17:24:55.626961"], ["updated_at", "2026-06-17 17:24:55.626961"]]
+  ↳ app/services/context_collector.rb:74:in `persist_context_item'
+  [1m[36mTRANSACTION (1.0ms)[0m  [1m[35mCOMMIT[0m
+  ↳ app/services/context_collector.rb:74:in `persist_context_item'
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  ↳ app/services/context_collector.rb:74:in `persist_context_item'
+  [1m[36mContextItem Create (0.8ms)[0m  [1m[32mINSERT INTO "context_items" ("command_id", "source", "external_id", "title", "body", "metadata", "occurred_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING "id"[0m  [["command_id", 4], ["source", "google_calendar"], ["external_id", "cal-client-review"], ["title", "Client delivery review"], ["body", "Review project updates and invoice status with client stakeholders."], ["metadata", "{\"starts_at\":\"2026-06-17T15:00:00Z\"}"], ["occurred_at", "2026-06-17 15:00:00"], ["created_at", "2026-06-17 17:24:55.629830"], ["updated_at", "2026-06-17 17:24:55.629830"]]
+  ↳ app/services/context_collector.rb:74:in `persist_context_item'
+  [1m[36mTRANSACTION (1.0ms)[0m  [1m[35mCOMMIT[0m
+  ↳ app/services/context_collector.rb:74:in `persist_context_item'
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  ↳ app/services/context_collector.rb:74:in `persist_context_item'
+  [1m[36mContextItem Create (0.6ms)[0m  [1m[32mINSERT INTO "context_items" ("command_id", "source", "external_id", "title", "body", "metadata", "occurred_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING "id"[0m  [["command_id", 4], ["source", "jira"], ["external_id", "JAR-101"], ["title", "Unblock auth API rollout"], ["body", "High-priority ticket for completing the auth API contract."], ["metadata", "{\"priority\":\"high\",\"status\":\"in_progress\"}"], ["occurred_at", "2026-06-16 17:24:55.626461"], ["created_at", "2026-06-17 17:24:55.632557"], ["updated_at", "2026-06-17 17:24:55.632557"]]
+  ↳ app/services/context_collector.rb:74:in `persist_context_item'
+  [1m[36mTRANSACTION (1.0ms)[0m  [1m[35mCOMMIT[0m
+  ↳ app/services/context_collector.rb:74:in `persist_context_item'
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  ↳ app/services/context_collector.rb:74:in `persist_context_item'
+  [1m[36mContextItem Create (0.6ms)[0m  [1m[32mINSERT INTO "context_items" ("command_id", "source", "external_id", "title", "body", "metadata", "occurred_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING "id"[0m  [["command_id", 4], ["source", "github"], ["external_id", "pr-42"], ["title", "Review auth API contract"], ["body", "Pending review on PR #42 before frontend integration can continue."], ["metadata", "{\"repository\":\"jarvis/api\",\"type\":\"review_request\"}"], ["occurred_at", "2026-06-17 11:24:55.626490"], ["created_at", "2026-06-17 17:24:55.635149"], ["updated_at", "2026-06-17 17:24:55.635149"]]
+  ↳ app/services/context_collector.rb:74:in `persist_context_item'
+  [1m[36mTRANSACTION (1.0ms)[0m  [1m[35mCOMMIT[0m
+  ↳ app/services/context_collector.rb:74:in `persist_context_item'
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  ↳ app/services/context_collector.rb:74:in `persist_context_item'
+  [1m[36mContextItem Create (0.9ms)[0m  [1m[32mINSERT INTO "context_items" ("command_id", "source", "external_id", "title", "body", "metadata", "occurred_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING "id"[0m  [["command_id", 4], ["source", "gmail"], ["external_id", "gmail-client-payment"], ["title", "Client payment clarification"], ["body", "Client asked for invoice amount confirmation before approving payment."], ["metadata", "{\"important\":true,\"category\":\"invoice\",\"action_items\":[\"Confirm invoice amount\"]}"], ["occurred_at", "2026-06-17 16:24:55.626497"], ["created_at", "2026-06-17 17:24:55.637748"], ["updated_at", "2026-06-17 17:24:55.637748"]]
+  ↳ app/services/context_collector.rb:74:in `persist_context_item'
+  [1m[36mTRANSACTION (1.1ms)[0m  [1m[35mCOMMIT[0m
+  ↳ app/services/context_collector.rb:74:in `persist_context_item'
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  ↳ app/services/context_collector.rb:74:in `persist_context_item'
+  [1m[36mContextItem Create (0.6ms)[0m  [1m[32mINSERT INTO "context_items" ("command_id", "source", "external_id", "title", "body", "metadata", "occurred_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING "id"[0m  [["command_id", 4], ["source", "gmail"], ["external_id", "gmail-project-blocker"], ["title", "Project API blocker"], ["body", "Frontend team is blocked on the new auth API contract."], ["metadata", "{\"important\":true,\"category\":\"blocker\",\"action_items\":[\"Reply with auth API contract status\"]}"], ["occurred_at", "2026-06-17 14:24:55.626500"], ["created_at", "2026-06-17 17:24:55.640701"], ["updated_at", "2026-06-17 17:24:55.640701"]]
+  ↳ app/services/context_collector.rb:74:in `persist_context_item'
+  [1m[36mTRANSACTION (1.0ms)[0m  [1m[35mCOMMIT[0m
+  ↳ app/services/context_collector.rb:74:in `persist_context_item'
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  ↳ app/services/ai_summary_service.rb:11:in `summarize'
+  [1m[36mAiSummary Create (1.7ms)[0m  [1m[32mINSERT INTO "ai_summaries" ("command_id", "summary", "action_items", "suggested_response", "confidence_score", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["command_id", 4], ["summary", "Focus on client/payment follow-ups, high-priority Jira work, pending PR reviews, and today's meetings."], ["action_items", "[\"Review google_calendar: Engineering standup\",\"Review google_calendar: Client delivery review\",\"Review jira: Unblock auth API rollout\",\"Review github: Review auth API contract\",\"Review gmail: Client payment clarification\"]"], ["suggested_response", nil], ["confidence_score", "0.76"], ["created_at", "2026-06-17 17:24:55.643434"], ["updated_at", "2026-06-17 17:24:55.643434"]]
+  ↳ app/services/ai_summary_service.rb:11:in `summarize'
+  [1m[36mTRANSACTION (1.0ms)[0m  [1m[35mCOMMIT[0m
+  ↳ app/services/ai_summary_service.rb:11:in `summarize'
+  [1m[36mAiSummary Load (0.2ms)[0m  [1m[34mSELECT "ai_summaries".* FROM "ai_summaries" WHERE "ai_summaries"."command_id" = $1 LIMIT $2[0m  [["command_id", 4], ["LIMIT", 1]]
+  ↳ app/services/ai_summary_service.rb:11:in `summarize'
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  ↳ app/services/command_processor.rb:22:in `process'
+  [1m[36mCommand Update (1.0ms)[0m  [1m[33mUPDATE "commands" SET "status" = $1, "response" = $2, "completed_at" = $3, "updated_at" = $4 WHERE "commands"."id" = $5[0m  [["status", "completed"], ["response", "{\"intent\":\"daily_focus\",\"summary\":\"Focus on client/payment follow-ups, high-priority Jira work, pending PR reviews, and today's meetings.\",\"action_items\":[\"Review google_calendar: Engineering standup\",\"Review google_calendar: Client delivery review\",\"Review jira: Unblock auth API rollout\",\"Review github: Review auth API contract\",\"Review gmail: Client payment clarification\"],\"suggested_response\":null,\"confidence_score\":0.76}"], ["completed_at", "2026-06-17 17:24:55.648229"], ["updated_at", "2026-06-17 17:24:55.648388"], ["id", 4]]
+  ↳ app/services/command_processor.rb:22:in `process'
+  [1m[36mTRANSACTION (1.0ms)[0m  [1m[35mCOMMIT[0m
+  ↳ app/services/command_processor.rb:22:in `process'
+Completed 201 Created in 38ms (Views: 0.1ms | ActiveRecord: 25.2ms (12 queries, 0 cached) | GC: 1.1ms)
+
+
+Started GET "/api/v1/commands/4" for ::1 at 2026-06-17 22:54:55 +0530
+Processing by Api::V1::CommandsController#show as */*
+  Parameters: {"id"=>"4", "command"=>{}}
+  [1m[36mUser Load (0.3ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."email" = $1 LIMIT $2[0m  [["email", "[FILTERED]"], ["LIMIT", 1]]
+  ↳ app/controllers/api/v1/base_controller.rb:7:in `current_user'
+  [1m[36mCommand Load (0.1ms)[0m  [1m[34mSELECT "commands".* FROM "commands" WHERE "commands"."user_id" = $1 AND "commands"."id" = $2 LIMIT $3[0m  [["user_id", 1], ["id", 4], ["LIMIT", 1]]
+  ↳ app/controllers/api/v1/commands_controller.rb:14:in `show'
+  [1m[36mContextItem Load (0.1ms)[0m  [1m[34mSELECT "context_items".* FROM "context_items" WHERE "context_items"."command_id" = $1[0m  [["command_id", 4]]
+  ↳ app/controllers/api/v1/commands_controller.rb:14:in `show'
+  [1m[36mAiSummary Load (0.1ms)[0m  [1m[34mSELECT "ai_summaries".* FROM "ai_summaries" WHERE "ai_summaries"."command_id" = $1[0m  [["command_id", 4]]
+  ↳ app/controllers/api/v1/commands_controller.rb:14:in `show'
+  [1m[36mContextItem Load (0.2ms)[0m  [1m[34mSELECT "context_items".* FROM "context_items" WHERE "context_items"."command_id" = $1 ORDER BY "context_items"."occurred_at" DESC[0m  [["command_id", 4]]
+  ↳ app/controllers/api/v1/commands_controller.rb:22:in `map'
+Completed 200 OK in 5ms (Views: 0.2ms | ActiveRecord: 0.8ms (5 queries, 0 cached) | GC: 0.3ms)
+
+
+Started GET "/api/v1/daily_briefing" for ::1 at 2026-06-17 22:55:19 +0530
+Processing by Api::V1::DailyBriefingsController#show as */*
+  Parameters: {"daily_briefing"=>{}}
+Completed 200 OK in 1ms (Views: 0.2ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/daily_briefing" for ::1 at 2026-06-17 22:55:20 +0530
+Processing by Api::V1::DailyBriefingsController#show as */*
+  Parameters: {"daily_briefing"=>{}}
+Completed 200 OK in 1ms (Views: 0.2ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started POST "/api/v1/commands" for ::1 at 2026-06-17 22:55:53 +0530
+Processing by Api::V1::CommandsController#create as */*
+  Parameters: {"command"=>"Any update from Anthony?"}
+  [1m[36mUser Load (0.5ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."email" = $1 LIMIT $2[0m  [["email", "[FILTERED]"], ["LIMIT", 1]]
+  ↳ app/controllers/api/v1/base_controller.rb:7:in `current_user'
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mBEGIN[0m
+  ↳ app/controllers/api/v1/commands_controller.rb:5:in `create'
+  [1m[36mCommand Create (1.2ms)[0m  [1m[32mINSERT INTO "commands" ("user_id", "raw_text", "intent", "status", "response", "error_message", "started_at", "completed_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING "id"[0m  [["user_id", 1], ["raw_text", "Any update from Anthony?"], ["intent", nil], ["status", "pending"], ["response", "{}"], ["error_message", nil], ["started_at", nil], ["completed_at", nil], ["created_at", "2026-06-17 17:25:53.824351"], ["updated_at", "2026-06-17 17:25:53.824351"]]
+  ↳ app/controllers/api/v1/commands_controller.rb:5:in `create'
+  [1m[36mTRANSACTION (4.9ms)[0m  [1m[35mCOMMIT[0m
+  ↳ app/controllers/api/v1/commands_controller.rb:5:in `create'
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mBEGIN[0m
+  ↳ app/services/command_processor.rb:11:in `process'
+  [1m[36mCommand Update (2.5ms)[0m  [1m[33mUPDATE "commands" SET "intent" = $1, "status" = $2, "started_at" = $3, "updated_at" = $4 WHERE "commands"."id" = $5[0m  [["intent", "person_update"], ["status", "processing"], ["started_at", "2026-06-17 17:25:53.832390"], ["updated_at", "2026-06-17 17:25:53.832793"], ["id", 5]]
+  ↳ app/services/command_processor.rb:11:in `process'
+  [1m[36mTRANSACTION (1.1ms)[0m  [1m[35mCOMMIT[0m
+  ↳ app/services/command_processor.rb:11:in `process'
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  ↳ app/services/context_collector.rb:74:in `persist_context_item'
+  [1m[36mContextItem Create (0.7ms)[0m  [1m[32mINSERT INTO "context_items" ("command_id", "source", "external_id", "title", "body", "metadata", "occurred_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING "id"[0m  [["command_id", 5], ["source", "gmail"], ["external_id", "gmail-anthony-invoice"], ["title", "Re: Pending invoice and timesheet"], ["body", "Anthony replied about the pending invoice and requested the updated timesheet."], ["metadata", "{\"from\":\"Anthony \\u003canthony@example.com\\u003e\",\"important\":true,\"action_items\":[\"Share updated timesheet\",\"Confirm invoice amount\"]}"], ["occurred_at", "2026-06-17 15:25:53.837833"], ["created_at", "2026-06-17 17:25:53.838444"], ["updated_at", "2026-06-17 17:25:53.838444"]]
+  ↳ app/services/context_collector.rb:74:in `persist_context_item'
+  [1m[36mTRANSACTION (1.3ms)[0m  [1m[35mCOMMIT[0m
+  ↳ app/services/context_collector.rb:74:in `persist_context_item'
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  ↳ app/services/context_collector.rb:74:in `persist_context_item'
+  [1m[36mContextItem Create (0.8ms)[0m  [1m[32mINSERT INTO "context_items" ("command_id", "source", "external_id", "title", "body", "metadata", "occurred_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING "id"[0m  [["command_id", 5], ["source", "jira"], ["external_id", "JAR-128"], ["title", "Invoice reconciliation follow-up"], ["body", "Anthony was mentioned on JAR-128 asking for updated billing notes."], ["metadata", "{\"priority\":\"high\",\"assignee\":\"Anthony\"}"], ["occurred_at", "2026-06-17 13:25:53.837852"], ["created_at", "2026-06-17 17:25:53.841808"], ["updated_at", "2026-06-17 17:25:53.841808"]]
+  ↳ app/services/context_collector.rb:74:in `persist_context_item'
+  [1m[36mTRANSACTION (1.1ms)[0m  [1m[35mCOMMIT[0m
+  ↳ app/services/context_collector.rb:74:in `persist_context_item'
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  ↳ app/services/context_collector.rb:74:in `persist_context_item'
+  [1m[36mContextItem Create (1.5ms)[0m  [1m[32mINSERT INTO "context_items" ("command_id", "source", "external_id", "title", "body", "metadata", "occurred_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING "id"[0m  [["command_id", 5], ["source", "github"], ["external_id", "pr-42-comment"], ["title", "PR #42 requested review"], ["body", "Anthony mentioned you on the API contract pull request."], ["metadata", "{\"repository\":\"jarvis/api\",\"type\":\"mention\"}"], ["occurred_at", "2026-06-17 12:25:53.837856"], ["created_at", "2026-06-17 17:25:53.844656"], ["updated_at", "2026-06-17 17:25:53.844656"]]
+  ↳ app/services/context_collector.rb:74:in `persist_context_item'
+  [1m[36mTRANSACTION (1.2ms)[0m  [1m[35mCOMMIT[0m
+  ↳ app/services/context_collector.rb:74:in `persist_context_item'
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  ↳ app/services/ai_summary_service.rb:11:in `summarize'
+  [1m[36mAiSummary Create (1.1ms)[0m  [1m[32mINSERT INTO "ai_summaries" ("command_id", "summary", "action_items", "suggested_response", "confidence_score", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["command_id", 5], ["summary", "Anthony has recent activity: Anthony replied about the pending invoice and requested the updated timesheet.."], ["action_items", "[\"Share updated timesheet\",\"Confirm invoice amount\"]"], ["suggested_response", "Hi Anthony, thanks for the update. I will share the revised timesheet and confirm the invoice amount shortly."], ["confidence_score", "0.82"], ["created_at", "2026-06-17 17:25:53.849469"], ["updated_at", "2026-06-17 17:25:53.849469"]]
+  ↳ app/services/ai_summary_service.rb:11:in `summarize'
+  [1m[36mTRANSACTION (1.2ms)[0m  [1m[35mCOMMIT[0m
+  ↳ app/services/ai_summary_service.rb:11:in `summarize'
+  [1m[36mAiSummary Load (0.3ms)[0m  [1m[34mSELECT "ai_summaries".* FROM "ai_summaries" WHERE "ai_summaries"."command_id" = $1 LIMIT $2[0m  [["command_id", 5], ["LIMIT", 1]]
+  ↳ app/services/ai_summary_service.rb:11:in `summarize'
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  ↳ app/services/command_processor.rb:22:in `process'
+  [1m[36mCommand Update (0.9ms)[0m  [1m[33mUPDATE "commands" SET "status" = $1, "response" = $2, "completed_at" = $3, "updated_at" = $4 WHERE "commands"."id" = $5[0m  [["status", "completed"], ["response", "{\"intent\":\"person_update\",\"summary\":\"Anthony has recent activity: Anthony replied about the pending invoice and requested the updated timesheet..\",\"action_items\":[\"Share updated timesheet\",\"Confirm invoice amount\"],\"suggested_response\":\"Hi Anthony, thanks for the update. I will share the revised timesheet and confirm the invoice amount shortly.\",\"confidence_score\":0.82}"], ["completed_at", "2026-06-17 17:25:53.853666"], ["updated_at", "2026-06-17 17:25:53.853799"], ["id", 5]]
+  ↳ app/services/command_processor.rb:22:in `process'
+  [1m[36mTRANSACTION (1.1ms)[0m  [1m[35mCOMMIT[0m
+  ↳ app/services/command_processor.rb:22:in `process'
+Completed 201 Created in 35ms (Views: 0.1ms | ActiveRecord: 22.4ms (9 queries, 0 cached) | GC: 1.9ms)
+
+
+Started GET "/api/v1/commands/5" for ::1 at 2026-06-17 22:55:53 +0530
+Processing by Api::V1::CommandsController#show as */*
+  Parameters: {"id"=>"5", "command"=>{}}
+  [1m[36mUser Load (0.3ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."email" = $1 LIMIT $2[0m  [["email", "[FILTERED]"], ["LIMIT", 1]]
+  ↳ app/controllers/api/v1/base_controller.rb:7:in `current_user'
+  [1m[36mCommand Load (0.3ms)[0m  [1m[34mSELECT "commands".* FROM "commands" WHERE "commands"."user_id" = $1 AND "commands"."id" = $2 LIMIT $3[0m  [["user_id", 1], ["id", 5], ["LIMIT", 1]]
+  ↳ app/controllers/api/v1/commands_controller.rb:14:in `show'
+  [1m[36mContextItem Load (0.2ms)[0m  [1m[34mSELECT "context_items".* FROM "context_items" WHERE "context_items"."command_id" = $1[0m  [["command_id", 5]]
+  ↳ app/controllers/api/v1/commands_controller.rb:14:in `show'
+  [1m[36mAiSummary Load (0.2ms)[0m  [1m[34mSELECT "ai_summaries".* FROM "ai_summaries" WHERE "ai_summaries"."command_id" = $1[0m  [["command_id", 5]]
+  ↳ app/controllers/api/v1/commands_controller.rb:14:in `show'
+  [1m[36mContextItem Load (0.2ms)[0m  [1m[34mSELECT "context_items".* FROM "context_items" WHERE "context_items"."command_id" = $1 ORDER BY "context_items"."occurred_at" DESC[0m  [["command_id", 5]]
+  ↳ app/controllers/api/v1/commands_controller.rb:22:in `map'
+Completed 200 OK in 6ms (Views: 0.2ms | ActiveRecord: 1.1ms (5 queries, 0 cached) | GC: 0.3ms)
+
+
+Started GET "/api/v1/daily_briefing" for ::1 at 2026-06-17 22:57:10 +0530
+Processing by Api::V1::DailyBriefingsController#show as */*
+  Parameters: {"daily_briefing"=>{}}
+Completed 200 OK in 1ms (Views: 0.4ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started POST "/api/v1/commands" for ::1 at 2026-06-17 22:57:31 +0530
+Processing by Api::V1::CommandsController#create as */*
+  Parameters: {"command"=>"Any update from Anthony?"}
+  [1m[36mUser Load (0.6ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."email" = $1 LIMIT $2[0m  [["email", "[FILTERED]"], ["LIMIT", 1]]
+  ↳ app/controllers/api/v1/base_controller.rb:7:in `current_user'
+  [1m[36mTRANSACTION (0.5ms)[0m  [1m[35mBEGIN[0m
+  ↳ app/controllers/api/v1/commands_controller.rb:5:in `create'
+  [1m[36mCommand Create (2.1ms)[0m  [1m[32mINSERT INTO "commands" ("user_id", "raw_text", "intent", "status", "response", "error_message", "started_at", "completed_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING "id"[0m  [["user_id", 1], ["raw_text", "Any update from Anthony?"], ["intent", nil], ["status", "pending"], ["response", "{}"], ["error_message", nil], ["started_at", nil], ["completed_at", nil], ["created_at", "2026-06-17 17:27:31.131516"], ["updated_at", "2026-06-17 17:27:31.131516"]]
+  ↳ app/controllers/api/v1/commands_controller.rb:5:in `create'
+  [1m[36mTRANSACTION (4.7ms)[0m  [1m[35mCOMMIT[0m
+  ↳ app/controllers/api/v1/commands_controller.rb:5:in `create'
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  ↳ app/services/command_processor.rb:11:in `process'
+  [1m[36mCommand Update (1.1ms)[0m  [1m[33mUPDATE "commands" SET "intent" = $1, "status" = $2, "started_at" = $3, "updated_at" = $4 WHERE "commands"."id" = $5[0m  [["intent", "person_update"], ["status", "processing"], ["started_at", "2026-06-17 17:27:31.140095"], ["updated_at", "2026-06-17 17:27:31.140337"], ["id", 6]]
+  ↳ app/services/command_processor.rb:11:in `process'
+  [1m[36mTRANSACTION (1.0ms)[0m  [1m[35mCOMMIT[0m
+  ↳ app/services/command_processor.rb:11:in `process'
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  ↳ app/services/context_collector.rb:74:in `persist_context_item'
+  [1m[36mContextItem Create (0.7ms)[0m  [1m[32mINSERT INTO "context_items" ("command_id", "source", "external_id", "title", "body", "metadata", "occurred_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING "id"[0m  [["command_id", 6], ["source", "gmail"], ["external_id", "gmail-anthony-invoice"], ["title", "Re: Pending invoice and timesheet"], ["body", "Anthony replied about the pending invoice and requested the updated timesheet."], ["metadata", "{\"from\":\"Anthony \\u003canthony@example.com\\u003e\",\"important\":true,\"action_items\":[\"Share updated timesheet\",\"Confirm invoice amount\"]}"], ["occurred_at", "2026-06-17 15:27:31.143464"], ["created_at", "2026-06-17 17:27:31.143962"], ["updated_at", "2026-06-17 17:27:31.143962"]]
+  ↳ app/services/context_collector.rb:74:in `persist_context_item'
+  [1m[36mTRANSACTION (1.0ms)[0m  [1m[35mCOMMIT[0m
+  ↳ app/services/context_collector.rb:74:in `persist_context_item'
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  ↳ app/services/context_collector.rb:74:in `persist_context_item'
+  [1m[36mContextItem Create (0.7ms)[0m  [1m[32mINSERT INTO "context_items" ("command_id", "source", "external_id", "title", "body", "metadata", "occurred_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING "id"[0m  [["command_id", 6], ["source", "jira"], ["external_id", "JAR-128"], ["title", "Invoice reconciliation follow-up"], ["body", "Anthony was mentioned on JAR-128 asking for updated billing notes."], ["metadata", "{\"priority\":\"high\",\"assignee\":\"Anthony\"}"], ["occurred_at", "2026-06-17 13:27:31.143477"], ["created_at", "2026-06-17 17:27:31.146850"], ["updated_at", "2026-06-17 17:27:31.146850"]]
+  ↳ app/services/context_collector.rb:74:in `persist_context_item'
+  [1m[36mTRANSACTION (1.0ms)[0m  [1m[35mCOMMIT[0m
+  ↳ app/services/context_collector.rb:74:in `persist_context_item'
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  ↳ app/services/context_collector.rb:74:in `persist_context_item'
+  [1m[36mContextItem Create (0.7ms)[0m  [1m[32mINSERT INTO "context_items" ("command_id", "source", "external_id", "title", "body", "metadata", "occurred_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING "id"[0m  [["command_id", 6], ["source", "github"], ["external_id", "pr-42-comment"], ["title", "PR #42 requested review"], ["body", "Anthony mentioned you on the API contract pull request."], ["metadata", "{\"repository\":\"jarvis/api\",\"type\":\"mention\"}"], ["occurred_at", "2026-06-17 12:27:31.143482"], ["created_at", "2026-06-17 17:27:31.149618"], ["updated_at", "2026-06-17 17:27:31.149618"]]
+  ↳ app/services/context_collector.rb:74:in `persist_context_item'
+  [1m[36mTRANSACTION (1.0ms)[0m  [1m[35mCOMMIT[0m
+  ↳ app/services/context_collector.rb:74:in `persist_context_item'
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  ↳ app/services/ai_summary_service.rb:11:in `summarize'
+  [1m[36mAiSummary Create (0.6ms)[0m  [1m[32mINSERT INTO "ai_summaries" ("command_id", "summary", "action_items", "suggested_response", "confidence_score", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["command_id", 6], ["summary", "Anthony has recent activity: Anthony replied about the pending invoice and requested the updated timesheet.."], ["action_items", "[\"Share updated timesheet\",\"Confirm invoice amount\"]"], ["suggested_response", "Hi Anthony, thanks for the update. I will share the revised timesheet and confirm the invoice amount shortly."], ["confidence_score", "0.82"], ["created_at", "2026-06-17 17:27:31.152428"], ["updated_at", "2026-06-17 17:27:31.152428"]]
+  ↳ app/services/ai_summary_service.rb:11:in `summarize'
+  [1m[36mTRANSACTION (1.0ms)[0m  [1m[35mCOMMIT[0m
+  ↳ app/services/ai_summary_service.rb:11:in `summarize'
+  [1m[36mAiSummary Load (0.2ms)[0m  [1m[34mSELECT "ai_summaries".* FROM "ai_summaries" WHERE "ai_summaries"."command_id" = $1 LIMIT $2[0m  [["command_id", 6], ["LIMIT", 1]]
+  ↳ app/services/ai_summary_service.rb:11:in `summarize'
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  ↳ app/services/command_processor.rb:22:in `process'
+  [1m[36mCommand Update (0.9ms)[0m  [1m[33mUPDATE "commands" SET "status" = $1, "response" = $2, "completed_at" = $3, "updated_at" = $4 WHERE "commands"."id" = $5[0m  [["status", "completed"], ["response", "{\"intent\":\"person_update\",\"summary\":\"Anthony has recent activity: Anthony replied about the pending invoice and requested the updated timesheet..\",\"action_items\":[\"Share updated timesheet\",\"Confirm invoice amount\"],\"suggested_response\":\"Hi Anthony, thanks for the update. I will share the revised timesheet and confirm the invoice amount shortly.\",\"confidence_score\":0.82}"], ["completed_at", "2026-06-17 17:27:31.155821"], ["updated_at", "2026-06-17 17:27:31.156020"], ["id", 6]]
+  ↳ app/services/command_processor.rb:22:in `process'
+  [1m[36mTRANSACTION (1.0ms)[0m  [1m[35mCOMMIT[0m
+  ↳ app/services/command_processor.rb:22:in `process'
+Completed 201 Created in 31ms (Views: 0.1ms | ActiveRecord: 19.4ms (9 queries, 0 cached) | GC: 0.3ms)
+
+
+Started GET "/api/v1/commands/6" for ::1 at 2026-06-17 22:57:31 +0530
+Processing by Api::V1::CommandsController#show as */*
+  Parameters: {"id"=>"6", "command"=>{}}
+  [1m[36mUser Load (0.4ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."email" = $1 LIMIT $2[0m  [["email", "[FILTERED]"], ["LIMIT", 1]]
+  ↳ app/controllers/api/v1/base_controller.rb:7:in `current_user'
+  [1m[36mCommand Load (0.2ms)[0m  [1m[34mSELECT "commands".* FROM "commands" WHERE "commands"."user_id" = $1 AND "commands"."id" = $2 LIMIT $3[0m  [["user_id", 1], ["id", 6], ["LIMIT", 1]]
+  ↳ app/controllers/api/v1/commands_controller.rb:14:in `show'
+  [1m[36mContextItem Load (0.2ms)[0m  [1m[34mSELECT "context_items".* FROM "context_items" WHERE "context_items"."command_id" = $1[0m  [["command_id", 6]]
+  ↳ app/controllers/api/v1/commands_controller.rb:14:in `show'
+  [1m[36mAiSummary Load (0.2ms)[0m  [1m[34mSELECT "ai_summaries".* FROM "ai_summaries" WHERE "ai_summaries"."command_id" = $1[0m  [["command_id", 6]]
+  ↳ app/controllers/api/v1/commands_controller.rb:14:in `show'
+  [1m[36mContextItem Load (0.2ms)[0m  [1m[34mSELECT "context_items".* FROM "context_items" WHERE "context_items"."command_id" = $1 ORDER BY "context_items"."occurred_at" DESC[0m  [["command_id", 6]]
+  ↳ app/controllers/api/v1/commands_controller.rb:22:in `map'
+Completed 200 OK in 6ms (Views: 0.2ms | ActiveRecord: 1.1ms (5 queries, 0 cached) | GC: 0.4ms)
+
+
+Started GET "/api/v1/daily_briefing" for ::1 at 2026-06-17 23:02:55 +0530
+Processing by Api::V1::DailyBriefingsController#show as */*
+  Parameters: {"daily_briefing"=>{}}
+Completed 200 OK in 1ms (Views: 0.2ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started POST "/api/v1/commands" for ::1 at 2026-06-17 23:05:29 +0530
+Processing by Api::V1::CommandsController#create as */*
+  Parameters: {"command"=>"Summarize today's important emails."}
+  [1m[36mUser Load (0.4ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."email" = $1 LIMIT $2[0m  [["email", "[FILTERED]"], ["LIMIT", 1]]
+  ↳ app/controllers/api/v1/base_controller.rb:7:in `current_user'
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  ↳ app/controllers/api/v1/commands_controller.rb:5:in `create'
+  [1m[36mCommand Create (1.0ms)[0m  [1m[32mINSERT INTO "commands" ("user_id", "raw_text", "intent", "status", "response", "error_message", "started_at", "completed_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING "id"[0m  [["user_id", 1], ["raw_text", "Summarize today's important emails."], ["intent", nil], ["status", "pending"], ["response", "{}"], ["error_message", nil], ["started_at", nil], ["completed_at", nil], ["created_at", "2026-06-17 17:35:29.184106"], ["updated_at", "2026-06-17 17:35:29.184106"]]
+  ↳ app/controllers/api/v1/commands_controller.rb:5:in `create'
+  [1m[36mTRANSACTION (4.9ms)[0m  [1m[35mCOMMIT[0m
+  ↳ app/controllers/api/v1/commands_controller.rb:5:in `create'
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  ↳ app/services/command_processor.rb:11:in `process'
+  [1m[36mCommand Update (0.9ms)[0m  [1m[33mUPDATE "commands" SET "intent" = $1, "status" = $2, "started_at" = $3, "updated_at" = $4 WHERE "commands"."id" = $5[0m  [["intent", "important_emails"], ["status", "processing"], ["started_at", "2026-06-17 17:35:29.191117"], ["updated_at", "2026-06-17 17:35:29.191361"], ["id", 7]]
+  ↳ app/services/command_processor.rb:11:in `process'
+  [1m[36mTRANSACTION (1.0ms)[0m  [1m[35mCOMMIT[0m
+  ↳ app/services/command_processor.rb:11:in `process'
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  ↳ app/services/context_collector.rb:74:in `persist_context_item'
+  [1m[36mContextItem Create (0.7ms)[0m  [1m[32mINSERT INTO "context_items" ("command_id", "source", "external_id", "title", "body", "metadata", "occurred_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING "id"[0m  [["command_id", 7], ["source", "gmail"], ["external_id", "gmail-client-payment"], ["title", "Client payment clarification"], ["body", "Client asked for invoice amount confirmation before approving payment."], ["metadata", "{\"important\":true,\"category\":\"invoice\",\"action_items\":[\"Confirm invoice amount\"]}"], ["occurred_at", "2026-06-17 16:35:29.194237"], ["created_at", "2026-06-17 17:35:29.194733"], ["updated_at", "2026-06-17 17:35:29.194733"]]
+  ↳ app/services/context_collector.rb:74:in `persist_context_item'
+  [1m[36mTRANSACTION (1.1ms)[0m  [1m[35mCOMMIT[0m
+  ↳ app/services/context_collector.rb:74:in `persist_context_item'
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  ↳ app/services/context_collector.rb:74:in `persist_context_item'
+  [1m[36mContextItem Create (0.6ms)[0m  [1m[32mINSERT INTO "context_items" ("command_id", "source", "external_id", "title", "body", "metadata", "occurred_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING "id"[0m  [["command_id", 7], ["source", "gmail"], ["external_id", "gmail-project-blocker"], ["title", "Project API blocker"], ["body", "Frontend team is blocked on the new auth API contract."], ["metadata", "{\"important\":true,\"category\":\"blocker\",\"action_items\":[\"Reply with auth API contract status\"]}"], ["occurred_at", "2026-06-17 14:35:29.194249"], ["created_at", "2026-06-17 17:35:29.197934"], ["updated_at", "2026-06-17 17:35:29.197934"]]
+  ↳ app/services/context_collector.rb:74:in `persist_context_item'
+  [1m[36mTRANSACTION (1.0ms)[0m  [1m[35mCOMMIT[0m
+  ↳ app/services/context_collector.rb:74:in `persist_context_item'
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  ↳ app/services/ai_summary_service.rb:11:in `summarize'
+  [1m[36mAiSummary Create (0.9ms)[0m  [1m[32mINSERT INTO "ai_summaries" ("command_id", "summary", "action_items", "suggested_response", "confidence_score", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["command_id", 7], ["summary", "2 important emails need attention today: Client payment clarification; Project API blocker."], ["action_items", "[\"Confirm invoice amount\",\"Reply with auth API contract status\"]"], ["suggested_response", nil], ["confidence_score", "0.78"], ["created_at", "2026-06-17 17:35:29.200710"], ["updated_at", "2026-06-17 17:35:29.200710"]]
+  ↳ app/services/ai_summary_service.rb:11:in `summarize'
+  [1m[36mTRANSACTION (1.2ms)[0m  [1m[35mCOMMIT[0m
+  ↳ app/services/ai_summary_service.rb:11:in `summarize'
+  [1m[36mAiSummary Load (0.1ms)[0m  [1m[34mSELECT "ai_summaries".* FROM "ai_summaries" WHERE "ai_summaries"."command_id" = $1 LIMIT $2[0m  [["command_id", 7], ["LIMIT", 1]]
+  ↳ app/services/ai_summary_service.rb:11:in `summarize'
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  ↳ app/services/command_processor.rb:22:in `process'
+  [1m[36mCommand Update (0.5ms)[0m  [1m[33mUPDATE "commands" SET "status" = $1, "response" = $2, "completed_at" = $3, "updated_at" = $4 WHERE "commands"."id" = $5[0m  [["status", "completed"], ["response", "{\"intent\":\"important_emails\",\"summary\":\"2 important emails need attention today: Client payment clarification; Project API blocker.\",\"action_items\":[\"Confirm invoice amount\",\"Reply with auth API contract status\"],\"suggested_response\":null,\"confidence_score\":0.78}"], ["completed_at", "2026-06-17 17:35:29.204218"], ["updated_at", "2026-06-17 17:35:29.204364"], ["id", 7]]
+  ↳ app/services/command_processor.rb:22:in `process'
+  [1m[36mTRANSACTION (96.9ms)[0m  [1m[35mCOMMIT[0m
+  ↳ app/services/command_processor.rb:22:in `process'
+Completed 201 Created in 143ms (Views: 0.2ms | ActiveRecord: 118.5ms (8 queries, 0 cached) | GC: 1.6ms)
+
+
+Started GET "/api/v1/commands/7" for ::1 at 2026-06-17 23:05:29 +0530
+Processing by Api::V1::CommandsController#show as */*
+  Parameters: {"id"=>"7", "command"=>{}}
+  [1m[36mUser Load (0.5ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."email" = $1 LIMIT $2[0m  [["email", "[FILTERED]"], ["LIMIT", 1]]
+  ↳ app/controllers/api/v1/base_controller.rb:7:in `current_user'
+  [1m[36mCommand Load (0.2ms)[0m  [1m[34mSELECT "commands".* FROM "commands" WHERE "commands"."user_id" = $1 AND "commands"."id" = $2 LIMIT $3[0m  [["user_id", 1], ["id", 7], ["LIMIT", 1]]
+  ↳ app/controllers/api/v1/commands_controller.rb:14:in `show'
+  [1m[36mContextItem Load (0.2ms)[0m  [1m[34mSELECT "context_items".* FROM "context_items" WHERE "context_items"."command_id" = $1[0m  [["command_id", 7]]
+  ↳ app/controllers/api/v1/commands_controller.rb:14:in `show'
+  [1m[36mAiSummary Load (0.2ms)[0m  [1m[34mSELECT "ai_summaries".* FROM "ai_summaries" WHERE "ai_summaries"."command_id" = $1[0m  [["command_id", 7]]
+  ↳ app/controllers/api/v1/commands_controller.rb:14:in `show'
+  [1m[36mContextItem Load (0.2ms)[0m  [1m[34mSELECT "context_items".* FROM "context_items" WHERE "context_items"."command_id" = $1 ORDER BY "context_items"."occurred_at" DESC[0m  [["command_id", 7]]
+  ↳ app/controllers/api/v1/commands_controller.rb:22:in `map'
+Completed 200 OK in 6ms (Views: 0.1ms | ActiveRecord: 1.3ms (5 queries, 0 cached) | GC: 0.1ms)
+
+
+Started GET "/api/v1/daily_briefing" for ::1 at 2026-06-17 23:06:43 +0530
+Processing by Api::V1::DailyBriefingsController#show as */*
+  Parameters: {"daily_briefing"=>{}}
+Completed 200 OK in 1ms (Views: 0.2ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/daily_briefing" for ::1 at 2026-06-18 15:29:38 +0530
+  [1m[36mActiveRecord::SchemaMigration Load (1.3ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+Processing by Api::V1::DailyBriefingsController#show as */*
+  Parameters: {"daily_briefing"=>{}}
+Completed 200 OK in 9ms (Views: 0.4ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started POST "/api/v1/commands" for ::1 at 2026-06-18 15:29:54 +0530
+Processing by Api::V1::CommandsController#create as */*
+  Parameters: {"command"=>"Any update from Anthony?"}
+  [1m[36mUser Load (1.1ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."email" = $1 LIMIT $2[0m  [["email", "[FILTERED]"], ["LIMIT", 1]]
+  ↳ app/controllers/api/v1/base_controller.rb:7:in `current_user'
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mBEGIN[0m
+  ↳ app/controllers/api/v1/commands_controller.rb:5:in `create'
+  [1m[36mCommand Create (5.1ms)[0m  [1m[32mINSERT INTO "commands" ("user_id", "raw_text", "intent", "status", "response", "error_message", "started_at", "completed_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING "id"[0m  [["user_id", 1], ["raw_text", "Any update from Anthony?"], ["intent", nil], ["status", "pending"], ["response", "{}"], ["error_message", nil], ["started_at", nil], ["completed_at", nil], ["created_at", "2026-06-18 09:59:55.056307"], ["updated_at", "2026-06-18 09:59:55.056307"]]
+  ↳ app/controllers/api/v1/commands_controller.rb:5:in `create'
+  [1m[36mTRANSACTION (1.4ms)[0m  [1m[35mCOMMIT[0m
+  ↳ app/controllers/api/v1/commands_controller.rb:5:in `create'
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  ↳ app/services/command_processor.rb:11:in `process'
+  [1m[36mCommand Update (1.9ms)[0m  [1m[33mUPDATE "commands" SET "intent" = $1, "status" = $2, "started_at" = $3, "updated_at" = $4 WHERE "commands"."id" = $5[0m  [["intent", "person_update"], ["status", "processing"], ["started_at", "2026-06-18 09:59:55.067444"], ["updated_at", "2026-06-18 09:59:55.067886"], ["id", 8]]
+  ↳ app/services/command_processor.rb:11:in `process'
+  [1m[36mTRANSACTION (1.2ms)[0m  [1m[35mCOMMIT[0m
+  ↳ app/services/command_processor.rb:11:in `process'
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mBEGIN[0m
+  ↳ app/services/context_collector.rb:74:in `persist_context_item'
+  [1m[36mContextItem Create (72.4ms)[0m  [1m[32mINSERT INTO "context_items" ("command_id", "source", "external_id", "title", "body", "metadata", "occurred_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING "id"[0m  [["command_id", 8], ["source", "gmail"], ["external_id", "gmail-anthony-invoice"], ["title", "Re: Pending invoice and timesheet"], ["body", "Anthony replied about the pending invoice and requested the updated timesheet."], ["metadata", "{\"from\":\"Anthony \\u003canthony@example.com\\u003e\",\"important\":true,\"action_items\":[\"Share updated timesheet\",\"Confirm invoice amount\"]}"], ["occurred_at", "2026-06-18 07:59:55.073253"], ["created_at", "2026-06-18 09:59:55.103285"], ["updated_at", "2026-06-18 09:59:55.103285"]]
+  ↳ app/services/context_collector.rb:74:in `persist_context_item'
+  [1m[36mTRANSACTION (1.5ms)[0m  [1m[35mCOMMIT[0m
+  ↳ app/services/context_collector.rb:74:in `persist_context_item'
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  ↳ app/services/context_collector.rb:74:in `persist_context_item'
+  [1m[36mContextItem Create (1.8ms)[0m  [1m[32mINSERT INTO "context_items" ("command_id", "source", "external_id", "title", "body", "metadata", "occurred_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING "id"[0m  [["command_id", 8], ["source", "jira"], ["external_id", "JAR-128"], ["title", "Invoice reconciliation follow-up"], ["body", "Anthony was mentioned on JAR-128 asking for updated billing notes."], ["metadata", "{\"priority\":\"high\",\"assignee\":\"Anthony\"}"], ["occurred_at", "2026-06-18 05:59:55.073284"], ["created_at", "2026-06-18 09:59:55.182051"], ["updated_at", "2026-06-18 09:59:55.182051"]]
+  ↳ app/services/context_collector.rb:74:in `persist_context_item'
+  [1m[36mTRANSACTION (1.2ms)[0m  [1m[35mCOMMIT[0m
+  ↳ app/services/context_collector.rb:74:in `persist_context_item'
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  ↳ app/services/context_collector.rb:74:in `persist_context_item'
+  [1m[36mContextItem Create (1.8ms)[0m  [1m[32mINSERT INTO "context_items" ("command_id", "source", "external_id", "title", "body", "metadata", "occurred_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING "id"[0m  [["command_id", 8], ["source", "github"], ["external_id", "pr-42-comment"], ["title", "PR #42 requested review"], ["body", "Anthony mentioned you on the API contract pull request."], ["metadata", "{\"repository\":\"jarvis/api\",\"type\":\"mention\"}"], ["occurred_at", "2026-06-18 04:59:55.073295"], ["created_at", "2026-06-18 09:59:55.188520"], ["updated_at", "2026-06-18 09:59:55.188520"]]
+  ↳ app/services/context_collector.rb:74:in `persist_context_item'
+  [1m[36mTRANSACTION (1.2ms)[0m  [1m[35mCOMMIT[0m
+  ↳ app/services/context_collector.rb:74:in `persist_context_item'
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mBEGIN[0m
+  ↳ app/services/ai_summary_service.rb:11:in `summarize'
+  [1m[36mAiSummary Create (2.9ms)[0m  [1m[32mINSERT INTO "ai_summaries" ("command_id", "summary", "action_items", "suggested_response", "confidence_score", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["command_id", 8], ["summary", "Anthony has recent activity: Anthony replied about the pending invoice and requested the updated timesheet.."], ["action_items", "[\"Share updated timesheet\",\"Confirm invoice amount\"]"], ["suggested_response", "Hi Anthony, thanks for the update. I will share the revised timesheet and confirm the invoice amount shortly."], ["confidence_score", "0.82"], ["created_at", "2026-06-18 09:59:55.205708"], ["updated_at", "2026-06-18 09:59:55.205708"]]
+  ↳ app/services/ai_summary_service.rb:11:in `summarize'
+  [1m[36mTRANSACTION (1.3ms)[0m  [1m[35mCOMMIT[0m
+  ↳ app/services/ai_summary_service.rb:11:in `summarize'
+  [1m[36mAiSummary Load (0.5ms)[0m  [1m[34mSELECT "ai_summaries".* FROM "ai_summaries" WHERE "ai_summaries"."command_id" = $1 LIMIT $2[0m  [["command_id", 8], ["LIMIT", 1]]
+  ↳ app/services/ai_summary_service.rb:11:in `summarize'
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mBEGIN[0m
+  ↳ app/services/command_processor.rb:22:in `process'
+  [1m[36mCommand Update (1.4ms)[0m  [1m[33mUPDATE "commands" SET "status" = $1, "response" = $2, "completed_at" = $3, "updated_at" = $4 WHERE "commands"."id" = $5[0m  [["status", "completed"], ["response", "{\"intent\":\"person_update\",\"summary\":\"Anthony has recent activity: Anthony replied about the pending invoice and requested the updated timesheet..\",\"action_items\":[\"Share updated timesheet\",\"Confirm invoice amount\"],\"suggested_response\":\"Hi Anthony, thanks for the update. I will share the revised timesheet and confirm the invoice amount shortly.\",\"confidence_score\":0.82}"], ["completed_at", "2026-06-18 09:59:55.215767"], ["updated_at", "2026-06-18 09:59:55.216117"], ["id", 8]]
+  ↳ app/services/command_processor.rb:22:in `process'
+  [1m[36mTRANSACTION (1.3ms)[0m  [1m[35mCOMMIT[0m
+  ↳ app/services/command_processor.rb:22:in `process'
+Completed 201 Created in 245ms (Views: 0.2ms | ActiveRecord: 127.4ms (9 queries, 0 cached) | GC: 20.2ms)
+
+
+Started GET "/api/v1/commands/8" for ::1 at 2026-06-18 15:29:55 +0530
+Processing by Api::V1::CommandsController#show as */*
+  Parameters: {"id"=>"8", "command"=>{}}
+  [1m[36mUser Load (0.6ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."email" = $1 LIMIT $2[0m  [["email", "[FILTERED]"], ["LIMIT", 1]]
+  ↳ app/controllers/api/v1/base_controller.rb:7:in `current_user'
+  [1m[36mCommand Load (0.4ms)[0m  [1m[34mSELECT "commands".* FROM "commands" WHERE "commands"."user_id" = $1 AND "commands"."id" = $2 LIMIT $3[0m  [["user_id", 1], ["id", 8], ["LIMIT", 1]]
+  ↳ app/controllers/api/v1/commands_controller.rb:14:in `show'
+  [1m[36mContextItem Load (0.4ms)[0m  [1m[34mSELECT "context_items".* FROM "context_items" WHERE "context_items"."command_id" = $1[0m  [["command_id", 8]]
+  ↳ app/controllers/api/v1/commands_controller.rb:14:in `show'
+  [1m[36mAiSummary Load (0.2ms)[0m  [1m[34mSELECT "ai_summaries".* FROM "ai_summaries" WHERE "ai_summaries"."command_id" = $1[0m  [["command_id", 8]]
+  ↳ app/controllers/api/v1/commands_controller.rb:14:in `show'
+  [1m[36mContextItem Load (0.5ms)[0m  [1m[34mSELECT "context_items".* FROM "context_items" WHERE "context_items"."command_id" = $1 ORDER BY "context_items"."occurred_at" DESC[0m  [["command_id", 8]]
+  ↳ app/controllers/api/v1/commands_controller.rb:22:in `map'
+Completed 200 OK in 24ms (Views: 0.4ms | ActiveRecord: 2.1ms (5 queries, 0 cached) | GC: 0.8ms)
+
+
+Started GET "/api/v1/daily_briefing" for ::1 at 2026-06-18 15:30:39 +0530
+Processing by Api::V1::DailyBriefingsController#show as */*
+  Parameters: {"daily_briefing"=>{}}
+Completed 200 OK in 1ms (Views: 0.4ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/daily_briefing" for ::1 at 2026-06-18 15:30:40 +0530
+Processing by Api::V1::DailyBriefingsController#show as */*
+  Parameters: {"daily_briefing"=>{}}
+Completed 200 OK in 1ms (Views: 0.4ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+  [1m[36mCommand Count (5.3ms)[0m  [1m[34mSELECT COUNT(*) FROM "commands"[0m
+Started GET "/icon.png" for ::1 at 2026-06-18 15:33:43 +0530
+  
+ActionController::RoutingError (No route matches [GET] "/icon.png"):
+  
+Started GET "/api/v1/daily_briefing" for ::1 at 2026-06-18 15:33:44 +0530
+Processing by Api::V1::DailyBriefingsController#show as */*
+  Parameters: {"daily_briefing"=>{}}
+Completed 200 OK in 1ms (Views: 0.2ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/assets/xray-c23a4bf54d69047770980e1f7adf32327ad0a340e3ff2eb0cc40f4028de6d603.js" for ::1 at 2026-06-18 15:33:58 +0530
+Started GET "/assets/application-ec02fbd480b3b8e34fb8ae96bb3f66e2352dff90c75423c4896f380e17023357.css" for ::1 at 2026-06-18 15:33:58 +0530
+  
+ActionController::RoutingError (No route matches [GET] "/assets/xray-c23a4bf54d69047770980e1f7adf32327ad0a340e3ff2eb0cc40f4028de6d603.js"):
+  
+  
+ActionController::RoutingError (No route matches [GET] "/assets/application-ec02fbd480b3b8e34fb8ae96bb3f66e2352dff90c75423c4896f380e17023357.css"):
+  
+Started GET "/admin/assets/img/favicon.png" for ::1 at 2026-06-18 15:33:58 +0530
+  
+ActionController::RoutingError (No route matches [GET] "/admin/assets/img/favicon.png"):
+  
+  [1m[35m (0.2ms)[0m  [1m[34mSELECT pg_try_advisory_lock(7527352867017338775)[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.4ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.7ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "environment"]]
+Migrating to RemoveMockIntegrationStatus (20260618120000)
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (1.7ms)[0m  [1m[33mUPDATE integration_accounts SET status = 'expired' WHERE status = 'mock'[0m
+  [1m[35m (3.2ms)[0m  [1m[35mALTER TABLE "integration_accounts" ALTER COLUMN "status" SET DEFAULT 'expired'[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.3ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20260618120000') RETURNING "version"[0m
+  [1m[36mTRANSACTION (1.4ms)[0m  [1m[35mCOMMIT[0m
+  [1m[35m (0.2ms)[0m  [1m[34mSELECT pg_advisory_unlock(7527352867017338775)[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.1ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+Started GET "/assets/xray-c23a4bf54d69047770980e1f7adf32327ad0a340e3ff2eb0cc40f4028de6d603.js" for ::1 at 2026-06-19 16:26:13 +0530
+Started GET "/assets/application-ec02fbd480b3b8e34fb8ae96bb3f66e2352dff90c75423c4896f380e17023357.css" for ::1 at 2026-06-19 16:26:13 +0530
+  [1m[36mActiveRecord::SchemaMigration Load (1.0ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  
+ActionController::RoutingError (No route matches [GET] "/assets/application-ec02fbd480b3b8e34fb8ae96bb3f66e2352dff90c75423c4896f380e17023357.css"):
+  
+  
+ActionController::RoutingError (No route matches [GET] "/assets/xray-c23a4bf54d69047770980e1f7adf32327ad0a340e3ff2eb0cc40f4028de6d603.js"):
+  
+Started GET "/admin/assets/img/favicon.png" for ::1 at 2026-06-19 16:26:14 +0530
+  
+ActionController::RoutingError (No route matches [GET] "/admin/assets/img/favicon.png"):
+  
