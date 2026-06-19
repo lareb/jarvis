@@ -11,7 +11,7 @@ gem "puma", ">= 5.0"
 # Use Redis adapter to run Action Cable in production
 gem "redis", ">= 4.0.1"
 gem "sidekiq", "~> 7.3"
-gem "ruby-openai", "~> 7.3"
+gem "ruby-openai", "~> 8.3"
 gem "faraday", "~> 2.14"
 
 # Use Kredis to get higher-level data types in Redis [https://github.com/rails/kredis]
