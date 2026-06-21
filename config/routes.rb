@@ -9,7 +9,15 @@ Rails.application.routes.draw do
     namespace :v1 do
       resources :commands, only: [:create, :show]
       get "daily_briefing", to: "daily_briefings#show"
-      resources :jira_tickets, only: [:index]
+      resources :jira_tickets, only: [:index] do
+        resources :automation_runs, only: [:create], controller: "ticket_automation_runs"
+      end
+      resources :ticket_automation_runs, only: [:show] do
+        member do
+          post :approve
+          post :publish
+        end
+      end
       post "integrations/jira/setup", to: "integrations#jira_setup"
       get "integrations/jira/status", to: "integrations#jira_status"
     end

@@ -127,6 +127,75 @@ curl http://localhost:3000/api/v1/jira_tickets
 Returns all tickets from the Jira projects configured in `JIRA_PROJECTS`, ordered by most recently updated.
 Fetched tickets are cached in the local `jira_tickets` table and updated by Jira issue key on every fetch.
 
+## Jira-to-Codex automation
+
+Jarvis can turn a locally persisted Jira ticket into an isolated Codex implementation run.
+The Rails server never switches its own checkout. Instead, it fetches `origin/main`, creates a
+Git worktree and ticket-key branch (for example, `SUD-123`), then invokes
+[`codex exec`](https://developers.openai.com/codex/noninteractive) in `workspace-write` mode.
+
+The workflow has two explicit approval gates:
+
+1. `Prepare Codex run` persists a `pending_approval` run without executing commands.
+2. `Approve implementation` queues Codex to edit and test in the isolated worktree.
+3. The run stops at `ready_for_review`; inspect `worktree_path`, `codex_output`, and the diff.
+4. `Publish branch` commits the reviewed changes and pushes the ticket branch to `origin`.
+
+Configure the trusted target repository before starting Rails and Sidekiq:
+
+```bash
+export JARVIS_AUTOMATION_REPOSITORY_PATH="/absolute/path/to/target-repository"
+export JARVIS_AUTOMATION_BASE_BRANCH="main"
+# Optional; defaults to Jarvis tmp/ticket_worktrees
+export JARVIS_AUTOMATION_WORKTREE_ROOT="/absolute/path/to/jarvis-worktrees"
+```
+
+For local development, you can use a Rails configuration file instead. This is more reliable
+when Rails is started by an IDE, service manager, or a terminal that does not inherit your
+shell exports:
+
+```bash
+cp config/ticket_automation.yml.example config/ticket_automation.yml
+```
+
+Edit the `development.repository_path`, then restart Rails and Sidekiq. The local file is
+ignored by Git. Environment variables take precedence when both are present.
+
+Codex reuses the local CLI authentication. Confirm it works before running automation:
+
+```bash
+codex --version
+codex exec --sandbox read-only "Summarize this repository"
+```
+
+Subprocesses do not inherit the Rails environment by default. These optional comma-separated
+allowlists can expose additional variables required by the target repository:
+
+```bash
+export JARVIS_CODEX_ENV_ALLOWLIST="PATH,HOME,CODEX_HOME,CODEX_API_KEY,LANG,LC_ALL,TERM"
+export JARVIS_GIT_ENV_ALLOWLIST="PATH,HOME,SSH_AUTH_SOCK,GIT_ASKPASS,GIT_SSH_COMMAND,LANG,LC_ALL,TERM"
+```
+
+Avoid adding Jira tokens, Rails credentials, or unrelated secrets. Git hooks are disabled for
+automation commands, command arguments are not passed through a shell, and Codex cannot push.
+The publish job owns commit and push after the second approval.
+
+Run the migration and background worker:
+
+```bash
+bin/rails db:migrate
+bundle exec sidekiq
+```
+
+Automation run API:
+
+```bash
+POST /api/v1/jira_tickets/:jira_ticket_id/automation_runs
+POST /api/v1/ticket_automation_runs/:id/approve
+GET  /api/v1/ticket_automation_runs/:id
+POST /api/v1/ticket_automation_runs/:id/publish
+```
+
 ## Integrations
 
 Read-only REST clients live under `app/services/integrations`:

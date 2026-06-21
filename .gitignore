@@ -22,6 +22,7 @@ pickle.txt
 .env.local
 config/master.key
 config/credentials.yml.enc
+config/ticket_automation.yml
 
 # Node.js / npm
 node_modules/
@@ -33,7 +34,7 @@ yarn.lock
 pnpm-lock.yaml
 
 # Next.js (if used in frontend)
-.next/
+/frontend/.next/
 out/
 .vercel
 

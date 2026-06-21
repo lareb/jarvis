@@ -9,10 +9,20 @@ import {
   Filter,
   Loader2,
   RefreshCw,
+  Rocket,
   TicketCheck
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import { checkJiraStatus, getJiraTickets, JiraTicket } from "@/lib/api";
+import {
+  approveTicketAutomationRun,
+  checkJiraStatus,
+  createTicketAutomationRun,
+  getJiraTickets,
+  getTicketAutomationRun,
+  JiraTicket,
+  publishTicketAutomationRun,
+  TicketAutomationRun
+} from "@/lib/api";
 import { JiraSetupModal } from "./jira-setup-modal";
 
 type LoadState = "idle" | "loading" | "success" | "error";
@@ -336,11 +346,64 @@ function SummaryCard({ icon, label, value }: { icon: React.ReactNode; label: str
 }
 
 function TicketRow({ ticket }: { ticket: JiraTicket }) {
+  const [run, setRun] = useState<TicketAutomationRun | null>(ticket.latest_automation_run || null);
+  const [actionError, setActionError] = useState<string | null>(null);
+  const [actionPending, setActionPending] = useState(false);
   const updatedAt = ticket.occurred_at
     ? new Intl.DateTimeFormat("en", { dateStyle: "medium", timeStyle: "short" }).format(
         new Date(ticket.occurred_at)
       )
     : "Unknown";
+
+  useEffect(() => {
+    if (!run || !["queued", "running", "publishing"].includes(run.status)) return;
+
+    const interval = window.setInterval(async () => {
+      try {
+        const response = await getTicketAutomationRun(run.id);
+        setRun(response.run);
+      } catch (error) {
+        setActionError(error instanceof Error ? error.message : "Unable to refresh automation run");
+      }
+    }, 3000);
+
+    return () => window.clearInterval(interval);
+  }, [run?.id, run?.status]);
+
+  async function createRun() {
+    await performAction(async () => {
+      const response = await createTicketAutomationRun(ticket.id);
+      setRun(response.run);
+    });
+  }
+
+  async function approveRun() {
+    if (!run || !window.confirm(`Allow Codex to create local changes for ${ticket.external_id}?`)) return;
+    await performAction(async () => {
+      const response = await approveTicketAutomationRun(run.id);
+      setRun(response.run);
+    });
+  }
+
+  async function publishRun() {
+    if (!run || !window.confirm(`Commit and push branch ${run.branch_name} to origin?`)) return;
+    await performAction(async () => {
+      const response = await publishTicketAutomationRun(run.id);
+      setRun(response.run);
+    });
+  }
+
+  async function performAction(action: () => Promise<void>) {
+    setActionPending(true);
+    setActionError(null);
+    try {
+      await action();
+    } catch (error) {
+      setActionError(error instanceof Error ? error.message : "Automation action failed");
+    } finally {
+      setActionPending(false);
+    }
+  }
 
   return (
     <article className="ticketRow">
@@ -369,8 +432,66 @@ function TicketRow({ ticket }: { ticket: JiraTicket }) {
             <ArrowUpRight size={15} />
           </a>
         ) : null}
+        <AutomationControls
+          run={run}
+          pending={actionPending}
+          onCreate={createRun}
+          onApprove={approveRun}
+          onPublish={publishRun}
+        />
+        {actionError || run?.error_message ? (
+          <span className="automationError">{actionError || run?.error_message}</span>
+        ) : null}
       </div>
     </article>
+  );
+}
+
+function AutomationControls({
+  run,
+  pending,
+  onCreate,
+  onApprove,
+  onPublish
+}: {
+  run: TicketAutomationRun | null;
+  pending: boolean;
+  onCreate: () => void;
+  onApprove: () => void;
+  onPublish: () => void;
+}) {
+  if (!run) {
+    return (
+      <button className="secondaryButton" disabled={pending} onClick={onCreate}>
+        <Rocket size={15} />
+        Prepare Codex run
+      </button>
+    );
+  }
+
+  if (run.status === "pending_approval") {
+    return (
+      <button className="primaryButton" disabled={pending} onClick={onApprove}>
+        Approve implementation
+      </button>
+    );
+  }
+
+  if (run.status === "ready_for_review") {
+    return (
+      <>
+        <span className="automationStatus">Ready: {run.branch_name}</span>
+        <button className="primaryButton" disabled={pending} onClick={onPublish}>
+          Publish branch
+        </button>
+      </>
+    );
+  }
+
+  return (
+    <span className="automationStatus">
+      {run.status === "completed" ? `Published ${run.branch_name}` : run.status.replaceAll("_", " ")}
+    </span>
   );
 }
 

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_06_19_140000) do
+ActiveRecord::Schema[7.2].define(version: 2026_06_20_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -87,6 +87,29 @@ ActiveRecord::Schema[7.2].define(version: 2026_06_19_140000) do
     t.index ["occurred_at"], name: "index_jira_tickets_on_occurred_at"
   end
 
+  create_table "ticket_automation_runs", force: :cascade do |t|
+    t.bigint "jira_ticket_id", null: false
+    t.string "status", default: "pending_approval", null: false
+    t.string "branch_name", null: false
+    t.string "base_branch", default: "main", null: false
+    t.string "repository_path", null: false
+    t.string "worktree_path"
+    t.string "codex_thread_id"
+    t.text "codex_output"
+    t.text "error_message"
+    t.jsonb "command_log", default: [], null: false
+    t.string "commit_sha"
+    t.datetime "approved_at"
+    t.datetime "started_at"
+    t.datetime "completed_at"
+    t.datetime "published_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["branch_name"], name: "index_ticket_automation_runs_on_branch_name"
+    t.index ["jira_ticket_id"], name: "index_ticket_automation_runs_on_jira_ticket_id"
+    t.index ["status"], name: "index_ticket_automation_runs_on_status"
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "email", null: false
     t.string "name", null: false
@@ -100,4 +123,5 @@ ActiveRecord::Schema[7.2].define(version: 2026_06_19_140000) do
   add_foreign_key "context_items", "commands"
   add_foreign_key "integration_accounts", "users"
   add_foreign_key "jira_tickets", "integration_accounts"
+  add_foreign_key "ticket_automation_runs", "jira_tickets"
 end

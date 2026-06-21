@@ -1,0 +1,12 @@
+development:
+  repository_path: /home/lareb/workspace/skappd/skappd_backend
+  base_branch: main
+  # worktree_root: /absolute/path/to/jarvis-worktrees
+
+test:
+  repository_path: /tmp/target-repository
+  base_branch: main
+
+production:
+  repository_path: /absolute/path/to/target-repository
+  base_branch: main

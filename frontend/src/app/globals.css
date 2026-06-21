@@ -51,6 +51,25 @@ button:disabled {
   align-items: center;
 }
 
+.ticketMeta button {
+  justify-content: center;
+  width: 100%;
+}
+
+.automationStatus {
+  color: var(--jira-dark);
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: capitalize;
+}
+
+.automationError {
+  color: #b42318;
+  font-size: 0.78rem;
+  max-width: 260px;
+  overflow-wrap: anywhere;
+}
+
 .jiraHeader {
   justify-content: space-between;
   margin-bottom: 24px;

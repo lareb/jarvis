@@ -18,6 +18,7 @@ export type ContextItem = {
 };
 
 export type JiraTicket = ContextItem & {
+  id: number;
   source: "jira";
   metadata: {
     priority?: string | null;
@@ -30,6 +31,31 @@ export type JiraTicket = ContextItem & {
     labels?: string[];
     url?: string;
   };
+  latest_automation_run?: TicketAutomationRun | null;
+};
+
+export type TicketAutomationRun = {
+  id: number;
+  jira_ticket_id: number;
+  ticket_key: string;
+  status:
+    | "pending_approval"
+    | "queued"
+    | "running"
+    | "ready_for_review"
+    | "publishing"
+    | "completed"
+    | "failed";
+  branch_name: string;
+  base_branch: string;
+  repository_path: string;
+  worktree_path?: string | null;
+  codex_thread_id?: string | null;
+  codex_output?: string | null;
+  error_message?: string | null;
+  commit_sha?: string | null;
+  created_at: string;
+  updated_at: string;
 };
 
 export type JiraTicketsResponse = {
@@ -92,6 +118,28 @@ export function getDailyBriefing() {
 
 export function getJiraTickets() {
   return request<JiraTicketsResponse>("/api/v1/jira_tickets");
+}
+
+export function createTicketAutomationRun(ticketId: number) {
+  return request<{ run: TicketAutomationRun }>(`/api/v1/jira_tickets/${ticketId}/automation_runs`, {
+    method: "POST"
+  });
+}
+
+export function getTicketAutomationRun(runId: number) {
+  return request<{ run: TicketAutomationRun }>(`/api/v1/ticket_automation_runs/${runId}`);
+}
+
+export function approveTicketAutomationRun(runId: number) {
+  return request<{ run: TicketAutomationRun }>(`/api/v1/ticket_automation_runs/${runId}/approve`, {
+    method: "POST"
+  });
+}
+
+export function publishTicketAutomationRun(runId: number) {
+  return request<{ run: TicketAutomationRun }>(`/api/v1/ticket_automation_runs/${runId}/publish`, {
+    method: "POST"
+  });
 }
 
 export function checkJiraStatus() {
