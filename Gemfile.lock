@@ -267,12 +267,12 @@ GEM
       faraday-multipart (>= 1)
     ruby-progressbar (1.13.0)
     securerandom (0.4.1)
-    sidekiq (7.3.9)
-      base64
-      connection_pool (>= 2.3.0)
-      logger
-      rack (>= 2.2.4)
-      redis-client (>= 0.22.2)
+    sidekiq (8.1.6)
+      connection_pool (>= 3.0.0)
+      json (>= 2.16.0)
+      logger (>= 1.7.0)
+      rack (>= 3.2.0)
+      redis-client (>= 0.29.0)
     stringio (3.2.0)
     thor (1.5.0)
     timeout (0.6.1)
@@ -305,8 +305,8 @@ DEPENDENCIES
   redis (>= 4.0.1)
   rspec-rails (~> 7.1)
   rubocop-rails-omakase
-  ruby-openai (~> 8.3)
-  sidekiq (~> 7.3)
+  ruby-openai (~> 7.3)
+  sidekiq (~> 8.1)
   tzinfo-data
 
 BUNDLED WITH
