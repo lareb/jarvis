@@ -118,6 +118,15 @@ curl http://localhost:3000/api/v1/daily_briefing
 
 Returns meetings, important emails, Jira priorities, GitHub PR review requests, and recommended focus items.
 
+### Jira Tickets
+
+```bash
+curl http://localhost:3000/api/v1/jira_tickets
+```
+
+Returns all tickets from the Jira projects configured in `JIRA_PROJECTS`, ordered by most recently updated.
+Fetched tickets are cached in the local `jira_tickets` table and updated by Jira issue key on every fetch.
+
 ## Integrations
 
 Read-only REST clients live under `app/services/integrations`:

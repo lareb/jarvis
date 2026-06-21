@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_06_18_120000) do
+ActiveRecord::Schema[7.2].define(version: 2026_06_19_140000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -71,6 +71,22 @@ ActiveRecord::Schema[7.2].define(version: 2026_06_18_120000) do
     t.check_constraint "provider::text = ANY (ARRAY['gmail'::character varying, 'jira'::character varying, 'github'::character varying, 'google_calendar'::character varying]::text[])", name: "integration_accounts_provider_check"
   end
 
+  create_table "jira_tickets", force: :cascade do |t|
+    t.bigint "integration_account_id", null: false
+    t.string "external_id", null: false
+    t.string "title", null: false
+    t.text "body"
+    t.jsonb "metadata", default: {}, null: false
+    t.datetime "occurred_at"
+    t.datetime "last_synced_at", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["integration_account_id", "external_id"], name: "index_jira_tickets_on_account_and_external_id", unique: true
+    t.index ["integration_account_id"], name: "index_jira_tickets_on_integration_account_id"
+    t.index ["last_synced_at"], name: "index_jira_tickets_on_last_synced_at"
+    t.index ["occurred_at"], name: "index_jira_tickets_on_occurred_at"
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "email", null: false
     t.string "name", null: false
@@ -83,4 +99,5 @@ ActiveRecord::Schema[7.2].define(version: 2026_06_18_120000) do
   add_foreign_key "commands", "users"
   add_foreign_key "context_items", "commands"
   add_foreign_key "integration_accounts", "users"
+  add_foreign_key "jira_tickets", "integration_accounts"
 end

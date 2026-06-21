@@ -39,7 +39,14 @@ module Integrations
 
       update_account_status("expired") if response.status == 401
       update_account_status("error") if response.status == 403
-      message = response.body.is_a?(Hash) ? response.body["message"] || response.body["error"] : response.body
+      message = if response.body.is_a?(Hash)
+        response.body["message"] ||
+          response.body["error"] ||
+          response.body["errorMessages"]&.join(", ") ||
+          response.body["errors"]&.values&.join(", ")
+      else
+        response.body
+      end
       raise RequestError, "#{provider} request failed (#{response.status}): #{message.presence || 'unknown error'}"
     end
 
