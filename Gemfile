@@ -14,7 +14,7 @@ gem "redis", ">= 4.0.1"
 gem "sidekiq", "~> 8.1"
 gem "ruby-openai", "~> 7.3"
 
-gem "faraday", "~> 2.14"
+gem "faraday", "~> 2.15"
 
 # Use Kredis to get higher-level data types in Redis [https://github.com/rails/kredis]
 # gem "kredis"
